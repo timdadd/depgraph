@@ -74,9 +74,9 @@ func (g *Graph) DependOn(child, parent any) error {
 		return errors.New("self-referential dependencyMap not allowed")
 	}
 
-	if g.DependsOn(parent, child) {
-		return errors.New("circular dependencyMap not allowed")
-	}
+	//if g.DependsOn(parent, child) {
+	//	return errors.New("circular dependencyMap not allowed")
+	//}
 
 	// Add nodes.
 	g.nodes[parent] = len(g.nodes)
