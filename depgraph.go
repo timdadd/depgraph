@@ -10,9 +10,15 @@ import (
 // https://github.com/kendru/darwin/blob/main/go/depgraph/depgraph.go
 // TimDadd - modified to use any instead of string and new sort algorithm
 
+type node struct {
+	id any
+	x  float32
+	y  float32
+}
+
 // A node in this graph is just any, so a nodeMap is a map whose
 // keys are the nodes that are present.  Int can be a weighting if everything else is equal
-type nodeMap map[any]int
+type nodeMap map[any]*node
 
 // dependencyMap tracks the nodes that have some dependency relationship to
 // some other node, represented by the key of the map.
@@ -58,9 +64,13 @@ func (g *Graph) Nodes() (nodes []any) {
 	return nodes
 }
 
-func (g *Graph) AddNode(node any) {
-	g.nodes[node] = len(g.nodes)
-	return
+func (g *Graph) AddNode(id any, x, y float32) error {
+	g.nodes[id] = &node{
+		id: id,
+		x:  x,
+		y:  y,
+	}
+	return nil
 }
 
 // AddLink name here for potential future use
@@ -78,9 +88,21 @@ func (g *Graph) DependOn(child, parent any) error {
 	//	return errors.New("circular dependencyMap not allowed")
 	//}
 
-	// Add nodes.
-	g.nodes[parent] = len(g.nodes)
-	g.nodes[child] = len(g.nodes)
+	// Add nodes if not already added
+	if n := g.nodes[parent]; n != nil {
+		g.nodes[parent] = &node{
+			id: parent,
+			x:  0,
+			y:  0,
+		}
+	}
+	if n := g.nodes[child]; n != nil {
+		g.nodes[child] = &node{
+			id: child,
+			x:  0,
+			y:  0,
+		}
+	}
 
 	// Add edges.
 	addNodeToNodeset(g.dependentMap, parent, child)
@@ -105,9 +127,9 @@ func (g *Graph) HasDependent(parent, child any) bool {
 
 // Leaves finds all nodes that don't have a dependency
 func (g *Graph) Leaves() (leaves []any) {
-	for node := range g.nodes {
-		if _, ok := g.dependencyMap[node]; !ok {
-			leaves = append(leaves, node)
+	for nodeID := range g.nodes {
+		if _, ok := g.dependencyMap[nodeID]; !ok {
+			leaves = append(leaves, nodeID)
 		}
 	}
 	return leaves
@@ -143,9 +165,9 @@ func (g *Graph) SortedLayers() (layers [][]any) {
 		for _, leafNode := range leaves {
 			shrinkingGraph.remove(leafNode)
 		}
-		if leaves[0] == "Submit & Display Order" {
-			fmt.Println(leaves)
-		}
+		//if leaves[0] == "Submit & Display Order" {
+		//	fmt.Println(leaves)
+		//}
 	}
 
 	return layers
@@ -173,33 +195,33 @@ func (g *Graph) SortedLayers() (layers [][]any) {
 //		}
 //		return
 //	}
-func removeFromDepMap(dm dependencyMap, key, node any) {
-	nodes := dm[key]
-	if len(nodes) == 1 {
+func removeFromDepMap(dm dependencyMap, key, nodeId any) {
+	nMap := dm[key]
+	if len(nMap) == 1 {
 		// The only element in the nodeMap must be `node`, so we
 		// can delete the entry entirely.
 		delete(dm, key)
 	} else {
 		// Otherwise, remove the single node from the nodeMap.
-		delete(nodes, node)
+		delete(nMap, nodeId)
 	}
 }
 
-func (g *Graph) remove(node any) {
+func (g *Graph) remove(nodeID any) {
 	// Remove edges from things that depend on `node`.
-	for dependent := range g.dependentMap[node] {
-		removeFromDepMap(g.dependencyMap, dependent, node)
+	for dependent := range g.dependentMap[nodeID] {
+		removeFromDepMap(g.dependencyMap, dependent, nodeID)
 	}
-	delete(g.dependentMap, node)
+	delete(g.dependentMap, nodeID)
 
 	// Remove all edges from node to the things it depends on.
-	for dependency := range g.dependencyMap[node] {
-		removeFromDepMap(g.dependentMap, dependency, node)
+	for dependency := range g.dependencyMap[nodeID] {
+		removeFromDepMap(g.dependentMap, dependency, nodeID)
 	}
-	delete(g.dependencyMap, node)
+	delete(g.dependencyMap, nodeID)
 
 	// Finally, remove the node itself.
-	delete(g.nodes, node)
+	delete(g.nodes, nodeID)
 }
 
 //// Sorted returns all the nodes in the graph is topological sort order.
@@ -266,24 +288,23 @@ func (g *Graph) clone() *Graph {
 
 // buildTransitive starts at `root` and continues calling `nextFn` to keep discovering more nodes until
 // the graph is exhausted. It returns the set of all discovered nodes.
-func (g *Graph) buildTransitive(root any, nextFn func(any) nodeMap) nodeMap {
-	if _, ok := g.nodes[root]; !ok {
+func (g *Graph) buildTransitive(rootNodeId any, nextFn func(any) nodeMap) nodeMap {
+	if _, ok := g.nodes[rootNodeId]; !ok {
 		return nil
 	}
-
 	out := make(nodeMap)
-	searchNext := []any{root}
+	searchNext := []any{rootNodeId}
 	for len(searchNext) > 0 {
 		// List of new nodes from this layer of the dependency graph. This is
 		// assigned to `searchNext` at the end of the outer "discovery" loop.
-		discovered := []any{}
-		for _, node := range searchNext {
+		var discovered []any
+		for _, nextNodeId := range searchNext {
 			// For each node to discover, find the next nodes.
-			for nextNode := range nextFn(node) {
+			for nextNode := range nextFn(nextNodeId) {
 				// If we have not seen the node before, add it to the output as well
 				// as the list of nodes to traverse in the next iteration.
 				if _, ok := out[nextNode]; !ok {
-					out[nextNode] = len(out)
+					out[nextNode] = g.nodes[nextNode]
 					discovered = append(discovered, nextNode)
 				}
 			}
@@ -310,12 +331,17 @@ func copyDepMap(m dependencyMap) dependencyMap {
 	return out
 }
 
-func addNodeToNodeset(dm dependencyMap, key, node any) {
+func addNodeToNodeset(dm dependencyMap, key, nodeId any) {
+	n := &node{
+		id: nodeId,
+		x:  0,
+		y:  0,
+	}
 	if nodes, ok := dm[key]; !ok {
-		nodes = nodeMap{node: 0} // Initialise the map
+		nodes = nodeMap{nodeId: n} // Initialise the map
 		dm[key] = nodes
 	} else {
-		nodes[node] = len(nodes)
+		nodes[nodeId] = n
 	}
 }
 
@@ -378,7 +404,12 @@ func (g *Graph) sortLeaves(prefix, sortedPrefix string, step, level int, childre
 		}
 		sort.Slice(leaves, func(i, j int) bool {
 			if dependents[leaves[i]] == dependents[leaves[j]] {
-				return g.nodes[leaves[i]] > g.nodes[leaves[j]]
+				nodeI := g.nodes[leaves[i]]
+				nodeJ := g.nodes[leaves[j]]
+				if nodeI.x != nodeJ.x {
+					return nodeI.x < nodeJ.x
+				}
+				return nodeI.y < nodeJ.y
 			}
 			return dependents[leaves[i]] > dependents[leaves[j]]
 		})
