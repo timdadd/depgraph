@@ -1,0 +1,1868 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:rule="http://rule" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="_2024041807088" targetNamespace="http://www.bizagi.com/definitions/_2024041807088">
+  <collaboration id="Id_97f7db81-3036-4505-817b-4463160e6f88" name="Assisted Channels">
+    <documentation />
+    <extensionElements>
+      <bizagi:BizagiExtensions xmlns:bizagi="http://www.bizagi.com/bpmn20">
+        <bizagi:BizagiProperties />
+        <bizagi:BizagiExtendedAttributeDefinitions>
+          <bizagi:BizagiExtendedAttributeDefinition Id="914938b1-67b5-42d6-9e0b-77a17b699ce2" Type="FileLinked" ExportAsTable="false" ModificationDate="0001-01-01T00:00:00+08:00" Visible="false">
+            <bizagi:Name>Attachment</bizagi:Name>
+            <bizagi:Options />
+            <bizagi:TableColumns />
+            <bizagi:ElementTypes>
+              <bizagi:AttributeElementType Type="SequenceFlow" />
+            </bizagi:ElementTypes>
+          </bizagi:BizagiExtendedAttributeDefinition>
+        </bizagi:BizagiExtendedAttributeDefinitions>
+        <bizagi:BizagiExtendedAttributeOrders>
+          <bizagi:BizagiExtendedAttributeOrder ModifiedBy="desktop-mt9m73k_china_j00368314">
+            <bizagi:ExtendedAttributes>
+              <bizagi:Id>914938b1-67b5-42d6-9e0b-77a17b699ce2</bizagi:Id>
+            </bizagi:ExtendedAttributes>
+            <bizagi:ElementType Type="SequenceFlow" />
+          </bizagi:BizagiExtendedAttributeOrder>
+        </bizagi:BizagiExtendedAttributeOrders>
+      </bizagi:BizagiExtensions>
+    </extensionElements>
+    <participant id="Id_226100e3-99f3-4613-ad0c-45f1e41b5429" name="CelcomDigi" processRef="Id_b3f1ea0f-cf74-44d2-bdbb-925b41e5d68b">
+      <documentation />
+      <extensionElements>
+        <bizagi:BizagiExtensions xmlns:bizagi="http://www.bizagi.com/bpmn20">
+          <bizagi:BizagiProperties>
+            <bizagi:BizagiProperty name="bgColor" value="#FFFFFF" />
+            <bizagi:BizagiProperty name="borderColor" value="#000000" />
+            <bizagi:BizagiProperty name="textColor" value="#000000" />
+            <bizagi:BizagiProperty name="textBackgroundColor" value="#FFFFFF" />
+            <bizagi:BizagiProperty name="textDirection" value="" />
+          </bizagi:BizagiProperties>
+        </bizagi:BizagiExtensions>
+      </extensionElements>
+    </participant>
+    <participant id="Participant_1qxh03t" name="Customer" processRef="Process_0ahdcyz">
+      <documentation>&lt;p&gt;&amp;nbsp;&lt;/p&gt;</documentation>
+    </participant>
+    <messageFlow id="Flow_185g69h" sourceRef="Activity_0pj31jb" targetRef="Activity_0ctpaup" />
+    <messageFlow id="Flow_15rkosk" sourceRef="Activity_0lslhvo" targetRef="Activity_14y8a5o" />
+    <group id="Group_1mm4b91" categoryValueRef="CategoryValue_ZkQd_Q" name="Fulfillment &#38; Activation PORTIN">
+      <documentation />
+    </group>
+    <textAnnotation id="TextAnnotation_0qqdz42">
+      <documentation />
+      <text>NPR RFS (Port ID)</text>
+    </textAnnotation>
+    <textAnnotation id="TextAnnotation_09uns4p">
+      <documentation />
+      <text>NPR Accepted or NPR Rejected (Port ID)</text>
+    </textAnnotation>
+    <textAnnotation id="TextAnnotation_0tpsbu8">
+      <documentation />
+      <text>NPR Cancel (Port ID)</text>
+    </textAnnotation>
+    <textAnnotation id="TextAnnotation_0jl7dhj">
+      <documentation />
+      <text>NPR Ack (Port ID)</text>
+    </textAnnotation>
+    <association id="Association_154awiy" associationDirection="None" sourceRef="TextAnnotation_0qqdz42" targetRef="Activity_0n17894" />
+    <association id="Association_1ouoxdn" associationDirection="None" sourceRef="TextAnnotation_0tpsbu8" targetRef="Activity_14d0wi6" />
+    <association id="Association_0kkc171" associationDirection="None" sourceRef="TextAnnotation_0jl7dhj" targetRef="Activity_0z6vbvm" />
+  </collaboration>
+  <process id="Id_b3f1ea0f-cf74-44d2-bdbb-925b41e5d68b" name="BSS" isExecutable="true">
+    <documentation />
+    <laneSet id="Id_219900d4-7565-421b-8b7d-4b926bd94aee">
+      <lane id="Lane_1aqu4ho" name="Teams">
+        <flowNodeRef>Activity_14y8a5o</flowNodeRef>
+        <flowNodeRef>Activity_0ctpaup</flowNodeRef>
+        <childLaneSet id="LaneSet_10arwsq">
+          <lane id="Lane_0k5l385" name="Agent/CSR (Assisted)">
+            <flowNodeRef>Activity_14y8a5o</flowNodeRef>
+            <flowNodeRef>Activity_0ctpaup</flowNodeRef>
+          </lane>
+        </childLaneSet>
+      </lane>
+      <lane id="Lane_0g79kfx" name="BSS">
+        <flowNodeRef>Gateway_0r20x7i</flowNodeRef>
+        <flowNodeRef>Activity_0r87n5x</flowNodeRef>
+        <flowNodeRef>Activity_1r47mqk</flowNodeRef>
+        <flowNodeRef>Activity_0fu3e4x</flowNodeRef>
+        <flowNodeRef>Gateway_1icfqwu</flowNodeRef>
+        <flowNodeRef>Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f</flowNodeRef>
+        <flowNodeRef>Id_9bcb3e93-3bf8-49eb-a1b1-e9cc8d9c8e1d</flowNodeRef>
+        <flowNodeRef>Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74</flowNodeRef>
+        <flowNodeRef>Event_156e4wi</flowNodeRef>
+        <flowNodeRef>Id_af69b80c-765a-4ae7-be40-22cb244b611b</flowNodeRef>
+        <flowNodeRef>Activity_1176p0t</flowNodeRef>
+        <flowNodeRef>Id_3f5cd1e3-761d-4613-90ae-792af851635d</flowNodeRef>
+        <flowNodeRef>Gateway_15nz4h8</flowNodeRef>
+        <flowNodeRef>Id_40e7d082-7ecb-4720-989c-ca65c390f2a6</flowNodeRef>
+        <flowNodeRef>Id_355a3ed4-2455-4ae7-b5e0-b486af3a9105</flowNodeRef>
+        <flowNodeRef>Gateway_0u6v33s</flowNodeRef>
+        <flowNodeRef>Gateway_0y26mfn</flowNodeRef>
+        <flowNodeRef>Event_1b30bns</flowNodeRef>
+        <flowNodeRef>Activity_1vtvz75</flowNodeRef>
+        <flowNodeRef>Gateway_19ib8qw</flowNodeRef>
+        <flowNodeRef>Gateway_1uv7159</flowNodeRef>
+        <flowNodeRef>Activity_0gc946n</flowNodeRef>
+        <flowNodeRef>Gateway_1iqkz3r</flowNodeRef>
+        <flowNodeRef>Activity_07y35my</flowNodeRef>
+        <flowNodeRef>Activity_0ku6ql7</flowNodeRef>
+        <flowNodeRef>Activity_1cofeb7</flowNodeRef>
+        <flowNodeRef>Activity_1qrayp8</flowNodeRef>
+        <flowNodeRef>Activity_1sgwv9e</flowNodeRef>
+        <flowNodeRef>Activity_1qj1e0v</flowNodeRef>
+        <flowNodeRef>Activity_1qydfap</flowNodeRef>
+        <flowNodeRef>Activity_0rbroim</flowNodeRef>
+        <flowNodeRef>Activity_0at6g8t</flowNodeRef>
+        <flowNodeRef>Activity_15shrim</flowNodeRef>
+        <flowNodeRef>Activity_0wyrzg9</flowNodeRef>
+        <flowNodeRef>Activity_0zvoww1</flowNodeRef>
+        <flowNodeRef>Activity_0wsuoyg</flowNodeRef>
+        <flowNodeRef>Activity_0z6vbvm</flowNodeRef>
+        <flowNodeRef>Activity_1swfmss</flowNodeRef>
+        <flowNodeRef>Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408</flowNodeRef>
+        <flowNodeRef>Id_0efd2669-b950-4d2d-aa2e-edc02424d928</flowNodeRef>
+        <flowNodeRef>Activity_0n17894</flowNodeRef>
+        <flowNodeRef>Activity_1hcsk28</flowNodeRef>
+        <flowNodeRef>Id_8a402122-eeb2-46b1-a5f2-9f695d2e8a88</flowNodeRef>
+        <flowNodeRef>Id_05abb9f9-43e9-4a25-be75-0ca2dfd38502</flowNodeRef>
+        <flowNodeRef>Activity_14d0wi6</flowNodeRef>
+        <flowNodeRef>Id_33b7ee99-afd9-40b7-bee3-a0637ee9f340</flowNodeRef>
+        <flowNodeRef>Activity_0fs7ehp</flowNodeRef>
+        <flowNodeRef>Gateway_0m3neg2</flowNodeRef>
+        <flowNodeRef>Event_0me7i5f</flowNodeRef>
+        <flowNodeRef>Event_0imzxiq</flowNodeRef>
+        <flowNodeRef>Activity_0er1yq6</flowNodeRef>
+        <flowNodeRef>Event_1ryfqic</flowNodeRef>
+        <flowNodeRef>Activity_00qw565</flowNodeRef>
+        <childLaneSet id="LaneSet_18c250g">
+          <lane id="Lane_0nchhnt" name="NGA Assisted">
+            <flowNodeRef>Activity_1qydfap</flowNodeRef>
+            <flowNodeRef>Activity_0rbroim</flowNodeRef>
+          </lane>
+          <lane id="Lane_14dgd9e" name="DTE">
+            <flowNodeRef>Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74</flowNodeRef>
+            <flowNodeRef>Event_156e4wi</flowNodeRef>
+            <flowNodeRef>Gateway_0y26mfn</flowNodeRef>
+            <flowNodeRef>Event_1b30bns</flowNodeRef>
+            <flowNodeRef>Activity_1vtvz75</flowNodeRef>
+            <flowNodeRef>Gateway_19ib8qw</flowNodeRef>
+            <flowNodeRef>Gateway_1uv7159</flowNodeRef>
+            <flowNodeRef>Activity_0gc946n</flowNodeRef>
+            <flowNodeRef>Gateway_1iqkz3r</flowNodeRef>
+            <flowNodeRef>Activity_07y35my</flowNodeRef>
+            <flowNodeRef>Activity_1qrayp8</flowNodeRef>
+            <flowNodeRef>Activity_1sgwv9e</flowNodeRef>
+            <flowNodeRef>Activity_1qj1e0v</flowNodeRef>
+          </lane>
+          <lane id="Lane_03xzr2t" name="HOBS">
+            <flowNodeRef>Gateway_0r20x7i</flowNodeRef>
+            <flowNodeRef>Activity_0r87n5x</flowNodeRef>
+            <flowNodeRef>Activity_1r47mqk</flowNodeRef>
+            <flowNodeRef>Activity_0fu3e4x</flowNodeRef>
+            <flowNodeRef>Gateway_1icfqwu</flowNodeRef>
+            <flowNodeRef>Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f</flowNodeRef>
+            <flowNodeRef>Id_9bcb3e93-3bf8-49eb-a1b1-e9cc8d9c8e1d</flowNodeRef>
+            <flowNodeRef>Id_af69b80c-765a-4ae7-be40-22cb244b611b</flowNodeRef>
+            <flowNodeRef>Activity_1176p0t</flowNodeRef>
+            <flowNodeRef>Id_3f5cd1e3-761d-4613-90ae-792af851635d</flowNodeRef>
+            <flowNodeRef>Gateway_15nz4h8</flowNodeRef>
+            <flowNodeRef>Id_40e7d082-7ecb-4720-989c-ca65c390f2a6</flowNodeRef>
+            <flowNodeRef>Id_355a3ed4-2455-4ae7-b5e0-b486af3a9105</flowNodeRef>
+            <flowNodeRef>Gateway_0u6v33s</flowNodeRef>
+            <flowNodeRef>Activity_0ku6ql7</flowNodeRef>
+            <flowNodeRef>Activity_1cofeb7</flowNodeRef>
+            <flowNodeRef>Activity_0at6g8t</flowNodeRef>
+            <flowNodeRef>Gateway_0m3neg2</flowNodeRef>
+            <flowNodeRef>Event_0me7i5f</flowNodeRef>
+            <flowNodeRef>Event_0imzxiq</flowNodeRef>
+            <flowNodeRef>Activity_0er1yq6</flowNodeRef>
+            <flowNodeRef>Event_1ryfqic</flowNodeRef>
+          </lane>
+          <lane id="Lane_0sdx6lg" name="DTE">
+            <flowNodeRef>Activity_15shrim</flowNodeRef>
+            <flowNodeRef>Activity_0wsuoyg</flowNodeRef>
+            <flowNodeRef>Activity_1hcsk28</flowNodeRef>
+            <flowNodeRef>Id_33b7ee99-afd9-40b7-bee3-a0637ee9f340</flowNodeRef>
+            <flowNodeRef>Activity_0fs7ehp</flowNodeRef>
+          </lane>
+          <lane id="Lane_0wxrwo2" name="CBS">
+            <flowNodeRef>Id_05abb9f9-43e9-4a25-be75-0ca2dfd38502</flowNodeRef>
+          </lane>
+          <lane id="Lane_16gzl3n" name="Nokia FlowOne">
+            <flowNodeRef>Id_8a402122-eeb2-46b1-a5f2-9f695d2e8a88</flowNodeRef>
+          </lane>
+          <lane id="Lane_1xjypxz" name="Physical inventory management">
+            <flowNodeRef>Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408</flowNodeRef>
+          </lane>
+          <lane id="Lane_0ypy8mx" name="Kafka">
+            <flowNodeRef>Id_0efd2669-b950-4d2d-aa2e-edc02424d928</flowNodeRef>
+          </lane>
+          <lane id="Lane_05vh0s7" name="PPA (MNP)">
+            <flowNodeRef>Activity_0z6vbvm</flowNodeRef>
+            <flowNodeRef>Activity_0n17894</flowNodeRef>
+            <flowNodeRef>Activity_14d0wi6</flowNodeRef>
+            <flowNodeRef>Activity_00qw565</flowNodeRef>
+          </lane>
+          <lane id="Lane_08cob6g" name="Logistics System">
+            <flowNodeRef>Activity_0wyrzg9</flowNodeRef>
+            <flowNodeRef>Activity_0zvoww1</flowNodeRef>
+            <flowNodeRef>Activity_1swfmss</flowNodeRef>
+          </lane>
+        </childLaneSet>
+      </lane>
+    </laneSet>
+    <sequenceFlow id="Flow_0q8uzey" sourceRef="Id_af69b80c-765a-4ae7-be40-22cb244b611b" targetRef="Event_0imzxiq" />
+    <sequenceFlow id="Id_b8e0aa34-c837-49b3-958a-e8e357487136" sourceRef="Id_af69b80c-765a-4ae7-be40-22cb244b611b" targetRef="Id_0efd2669-b950-4d2d-aa2e-edc02424d928">
+      <documentation />
+      <extensionElements>
+        <bizagi:BizagiExtensions xmlns:bizagi="http://www.bizagi.com/bpmn20">
+          <bizagi:BizagiProperties>
+            <bizagi:BizagiProperty name="bgColor" value="White" />
+            <bizagi:BizagiProperty name="borderColor" value="#000000" />
+            <bizagi:BizagiProperty name="textColor" value="#000000" />
+            <bizagi:BizagiProperty name="textBackgroundColor" value="#FFFFFF" />
+            <bizagi:BizagiProperty name="textDirection" value="" />
+          </bizagi:BizagiProperties>
+        </bizagi:BizagiExtensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_0186ni1" sourceRef="Activity_1hcsk28" targetRef="Activity_0n17894" />
+    <sequenceFlow id="Flow_0c2deou" sourceRef="Activity_1176p0t" targetRef="Id_af69b80c-765a-4ae7-be40-22cb244b611b" />
+    <sequenceFlow id="Flow_18uvy38" sourceRef="Activity_1176p0t" targetRef="Activity_1hcsk28" />
+    <sequenceFlow id="Flow_0fefwwu" sourceRef="Id_3f5cd1e3-761d-4613-90ae-792af851635d" targetRef="Activity_1176p0t" />
+    <sequenceFlow id="Flow_1hdit1b" sourceRef="Id_40e7d082-7ecb-4720-989c-ca65c390f2a6" targetRef="Id_3f5cd1e3-761d-4613-90ae-792af851635d" />
+    <sequenceFlow id="Flow_0ah6ihi" sourceRef="Id_355a3ed4-2455-4ae7-b5e0-b486af3a9105" targetRef="Id_40e7d082-7ecb-4720-989c-ca65c390f2a6" />
+    <sequenceFlow id="Id_4d686d02-6fc5-48d4-b20b-7387c9e24585" sourceRef="Id_355a3ed4-2455-4ae7-b5e0-b486af3a9105" targetRef="Id_8a402122-eeb2-46b1-a5f2-9f695d2e8a88">
+      <documentation />
+      <extensionElements>
+        <bizagi:BizagiExtensions xmlns:bizagi="http://www.bizagi.com/bpmn20">
+          <bizagi:BizagiProperties>
+            <bizagi:BizagiProperty name="bgColor" value="White" />
+            <bizagi:BizagiProperty name="borderColor" value="#000000" />
+            <bizagi:BizagiProperty name="textColor" value="#000000" />
+            <bizagi:BizagiProperty name="textBackgroundColor" value="#FFFFFF" />
+            <bizagi:BizagiProperty name="textDirection" value="" />
+          </bizagi:BizagiProperties>
+        </bizagi:BizagiExtensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_1dta7ke" name="Rejected" sourceRef="Gateway_0u6v33s" targetRef="Gateway_15nz4h8" />
+    <sequenceFlow id="Flow_12j18l6" name="Accepted" sourceRef="Gateway_0u6v33s" targetRef="Id_355a3ed4-2455-4ae7-b5e0-b486af3a9105" />
+    <sequenceFlow id="Flow_123mszc" sourceRef="Activity_0er1yq6" targetRef="Gateway_0u6v33s" />
+    <sequenceFlow id="Id_50eff493-0a92-44dd-bccf-2cd62cddca07" sourceRef="Id_33b7ee99-afd9-40b7-bee3-a0637ee9f340" targetRef="Id_05abb9f9-43e9-4a25-be75-0ca2dfd38502">
+      <documentation />
+      <extensionElements>
+        <bizagi:BizagiExtensions xmlns:bizagi="http://www.bizagi.com/bpmn20">
+          <bizagi:BizagiProperties>
+            <bizagi:BizagiProperty name="bgColor" value="White" />
+            <bizagi:BizagiProperty name="borderColor" value="#000000" />
+            <bizagi:BizagiProperty name="textColor" value="#000000" />
+            <bizagi:BizagiProperty name="textBackgroundColor" value="#FFFFFF" />
+            <bizagi:BizagiProperty name="textDirection" value="" />
+          </bizagi:BizagiProperties>
+        </bizagi:BizagiExtensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Id_2943b889-30cb-481d-adcd-b4408819a379" sourceRef="Id_40e7d082-7ecb-4720-989c-ca65c390f2a6" targetRef="Id_33b7ee99-afd9-40b7-bee3-a0637ee9f340">
+      <documentation />
+      <extensionElements>
+        <bizagi:BizagiExtensions xmlns:bizagi="http://www.bizagi.com/bpmn20">
+          <bizagi:BizagiProperties>
+            <bizagi:BizagiProperty name="bgColor" value="White" />
+            <bizagi:BizagiProperty name="borderColor" value="#000000" />
+            <bizagi:BizagiProperty name="textColor" value="#000000" />
+            <bizagi:BizagiProperty name="textBackgroundColor" value="#FFFFFF" />
+            <bizagi:BizagiProperty name="textDirection" value="" />
+          </bizagi:BizagiProperties>
+        </bizagi:BizagiExtensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_0ixfx8l" sourceRef="Activity_0fs7ehp" targetRef="Activity_14d0wi6" />
+    <sequenceFlow id="Flow_16yjphj" sourceRef="Activity_0r87n5x" targetRef="Gateway_0r20x7i" />
+    <sequenceFlow id="Flow_1keai8u" sourceRef="Activity_15shrim" targetRef="Activity_0r87n5x" />
+    <sequenceFlow id="Flow_049xwq1" sourceRef="Activity_0wyrzg9" targetRef="Activity_15shrim" />
+    <sequenceFlow id="Flow_1ep5g6k" sourceRef="Activity_0zvoww1" targetRef="Activity_0wyrzg9" />
+    <sequenceFlow id="Flow_1ak3pu7" sourceRef="Activity_0wsuoyg" targetRef="Activity_0zvoww1" />
+    <sequenceFlow id="Flow_0y88dn9" sourceRef="Activity_1r47mqk" targetRef="Activity_0wsuoyg" />
+    <sequenceFlow id="Flow_05ptgle" sourceRef="Activity_0fu3e4x" targetRef="Event_1ryfqic" />
+    <sequenceFlow id="Flow_1276p9g" sourceRef="Activity_0fu3e4x" targetRef="Activity_0z6vbvm" />
+    <sequenceFlow id="Flow_07j53s2" sourceRef="Gateway_0r20x7i" targetRef="Activity_0fu3e4x" />
+    <sequenceFlow id="Flow_13ml0bg" sourceRef="Activity_0at6g8t" targetRef="Activity_0fu3e4x" />
+    <sequenceFlow id="Flow_130p8wk" name="No" sourceRef="Gateway_1icfqwu" targetRef="Gateway_0r20x7i" />
+    <sequenceFlow id="Flow_015s3i1" name="Yes" sourceRef="Gateway_1icfqwu" targetRef="Activity_1r47mqk" />
+    <sequenceFlow id="Flow_1ua3zby" sourceRef="Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f" targetRef="Gateway_1icfqwu" />
+    <sequenceFlow id="Flow_118k12t" sourceRef="Id_9bcb3e93-3bf8-49eb-a1b1-e9cc8d9c8e1d" targetRef="Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f" />
+    <sequenceFlow id="Flow_0fslnrv" sourceRef="Gateway_0y26mfn" targetRef="Event_1b30bns" />
+    <sequenceFlow id="Flow_17r7g1n" sourceRef="Activity_1vtvz75" targetRef="Activity_1swfmss" />
+    <sequenceFlow id="Flow_127pims" sourceRef="Activity_1vtvz75" targetRef="Gateway_0y26mfn" />
+    <sequenceFlow id="Flow_0zjhj51" name="No" sourceRef="Gateway_19ib8qw" targetRef="Gateway_0y26mfn" />
+    <sequenceFlow id="Flow_1evg68h" name="Yes" sourceRef="Gateway_19ib8qw" targetRef="Activity_1vtvz75" />
+    <sequenceFlow id="Flow_0a4gqki" sourceRef="Gateway_1uv7159" targetRef="Gateway_19ib8qw" />
+    <sequenceFlow id="Flow_1odra2d" sourceRef="Activity_0gc946n" targetRef="Gateway_1uv7159" />
+    <sequenceFlow id="Flow_1tl0a6g" sourceRef="Activity_0gc946n" targetRef="Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408" />
+    <sequenceFlow id="Flow_1oe98hl" name="pSIM" sourceRef="Gateway_1iqkz3r" targetRef="Activity_0gc946n" />
+    <sequenceFlow id="Flow_074hzpe" name="eSIM" sourceRef="Gateway_1iqkz3r" targetRef="Gateway_1uv7159" />
+    <sequenceFlow id="Flow_0qxwtpu" sourceRef="Activity_07y35my" targetRef="Gateway_1iqkz3r" />
+    <sequenceFlow id="Flow_1fpm91p" sourceRef="Id_af69b80c-765a-4ae7-be40-22cb244b611b" targetRef="Activity_07y35my" />
+    <sequenceFlow id="Flow_1k4oe7m" sourceRef="Gateway_0m3neg2" targetRef="Event_0me7i5f" />
+    <sequenceFlow id="Flow_1mfk6nj" name="Automatically canceled after X days" sourceRef="Gateway_15nz4h8" targetRef="Gateway_0m3neg2" />
+    <sequenceFlow id="Flow_1h43zoa" sourceRef="Activity_1cofeb7" targetRef="Activity_0fs7ehp" />
+    <sequenceFlow id="Flow_0s162k3" sourceRef="Activity_1cofeb7" targetRef="Gateway_0m3neg2" />
+    <sequenceFlow id="Flow_0uxcmi9" sourceRef="Activity_1qrayp8" targetRef="Activity_0ku6ql7" />
+    <sequenceFlow id="Flow_0tr58q2" sourceRef="Activity_1qrayp8" targetRef="Activity_1sgwv9e" />
+    <sequenceFlow id="Flow_0bk7o6y" sourceRef="Activity_1qj1e0v" targetRef="Activity_1cofeb7" />
+    <sequenceFlow id="Flow_0676vwq" sourceRef="Activity_1qydfap" targetRef="Activity_1qrayp8" />
+    <sequenceFlow id="Flow_19mawok" sourceRef="Activity_14y8a5o" targetRef="Activity_1qydfap" />
+    <sequenceFlow id="Flow_0tnepkn" sourceRef="Activity_0rbroim" targetRef="Activity_1qj1e0v" />
+    <sequenceFlow id="Flow_0yfh7mb" sourceRef="Activity_0ctpaup" targetRef="Activity_0rbroim" />
+    <sequenceFlow id="Id_d2bda2f8-caca-4b20-b396-e0967744f60f" sourceRef="Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74" targetRef="Id_9bcb3e93-3bf8-49eb-a1b1-e9cc8d9c8e1d">
+      <documentation />
+      <extensionElements>
+        <bizagi:BizagiExtensions xmlns:bizagi="http://www.bizagi.com/bpmn20">
+          <bizagi:BizagiProperties>
+            <bizagi:BizagiProperty name="bgColor" value="White" />
+            <bizagi:BizagiProperty name="borderColor" value="#000000" />
+            <bizagi:BizagiProperty name="textColor" value="#000000" />
+            <bizagi:BizagiProperty name="textBackgroundColor" value="#FFFFFF" />
+            <bizagi:BizagiProperty name="textDirection" value="" />
+          </bizagi:BizagiProperties>
+        </bizagi:BizagiExtensions>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_18p2usn" sourceRef="Event_156e4wi" targetRef="Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74" />
+    <exclusiveGateway id="Gateway_0r20x7i" name="endif">
+      <incoming>Flow_16yjphj</incoming>
+      <incoming>Flow_130p8wk</incoming>
+      <outgoing>Flow_07j53s2</outgoing>
+    </exclusiveGateway>
+    <task id="Activity_0r87n5x" name="Receives Logistics Call Back - pSIM delivered">
+      <documentation />
+      <incoming>Flow_1keai8u</incoming>
+      <outgoing>Flow_16yjphj</outgoing>
+    </task>
+    <task id="Activity_1r47mqk" name="Request for Logistics SIM Card Delivery">
+      <documentation />
+      <incoming>Flow_015s3i1</incoming>
+      <outgoing>Flow_0y88dn9</outgoing>
+    </task>
+    <task id="Activity_0fu3e4x" name="Send Port-in request to Regulator">
+      <incoming>Flow_13ml0bg</incoming>
+      <incoming>Flow_07j53s2</incoming>
+      <outgoing>Flow_1276p9g</outgoing>
+      <outgoing>Flow_05ptgle</outgoing>
+    </task>
+    <exclusiveGateway id="Gateway_1icfqwu" name="Order requires Logistics SIM Card delivery?">
+      <documentation />
+      <incoming>Flow_1ua3zby</incoming>
+      <outgoing>Flow_015s3i1</outgoing>
+      <outgoing>Flow_130p8wk</outgoing>
+    </exclusiveGateway>
+    <task id="Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f" name="Decompose, Orchestrate Order">
+      <documentation>Start of asynchronous Order Fulfilment</documentation>
+      <incoming>Flow_118k12t</incoming>
+      <outgoing>Flow_1ua3zby</outgoing>
+    </task>
+    <task id="Id_9bcb3e93-3bf8-49eb-a1b1-e9cc8d9c8e1d" name="Validate,Create,Enrich Order, Record Cust data">
+      <documentation />
+      <incoming>Id_d2bda2f8-caca-4b20-b396-e0967744f60f</incoming>
+      <outgoing>Flow_118k12t</outgoing>
+    </task>
+    <task id="Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74" name="Post Order Submission">
+      <documentation />
+      <incoming>Flow_18p2usn</incoming>
+      <outgoing>Id_d2bda2f8-caca-4b20-b396-e0967744f60f</outgoing>
+    </task>
+    <intermediateThrowEvent id="Event_156e4wi">
+      <outgoing>Flow_18p2usn</outgoing>
+    </intermediateThrowEvent>
+    <sequenceFlow id="Flow_1gd92cd" sourceRef="Activity_00qw565" targetRef="Event_1ryfqic" />
+    <sequenceFlow id="Flow_095ix6p" sourceRef="Activity_1sgwv9e" targetRef="Activity_0at6g8t" />
+    <sequenceFlow id="Flow_0faqqsw" sourceRef="Gateway_15nz4h8" targetRef="Activity_0at6g8t" />
+    <task id="Id_af69b80c-765a-4ae7-be40-22cb244b611b" name="Order Completion Processing">
+      <documentation />
+      <incoming>Flow_0c2deou</incoming>
+      <outgoing>Id_b8e0aa34-c837-49b3-958a-e8e357487136</outgoing>
+      <outgoing>Flow_0q8uzey</outgoing>
+      <outgoing>Flow_1fpm91p</outgoing>
+    </task>
+    <task id="Activity_1176p0t" name="Sync Port-in RFS">
+      <incoming>Flow_0fefwwu</incoming>
+      <outgoing>Flow_18uvy38</outgoing>
+      <outgoing>Flow_0c2deou</outgoing>
+    </task>
+    <task id="Id_3f5cd1e3-761d-4613-90ae-792af851635d" name="Update Inventory with Port-in MSISDN">
+      <documentation />
+      <incoming>Flow_1hdit1b</incoming>
+      <outgoing>Flow_0fefwwu</outgoing>
+    </task>
+    <exclusiveGateway id="Gateway_15nz4h8" name="Next action?">
+      <incoming>Flow_1dta7ke</incoming>
+      <outgoing>Flow_1mfk6nj</outgoing>
+      <outgoing>Flow_0faqqsw</outgoing>
+    </exclusiveGateway>
+    <task id="Id_40e7d082-7ecb-4720-989c-ca65c390f2a6" name="BSS Service Fulfillment &#38; Activation">
+      <documentation />
+      <extensionElements>
+        <rule:rules>
+          <rule:rule id="R_CD_NS_ffa_CHN_ZkCfSQ" type="function" code="A-14-4" name="BSS &#38; OSS Service Fulfillment &#38; Activation - Separate Order" description="Logistic/Commerce Platform, Usage, MNP Success, etc trigger" />
+        </rule:rules>
+      </extensionElements>
+      <incoming>Flow_0ah6ihi</incoming>
+      <outgoing>Id_2943b889-30cb-481d-adcd-b4408819a379</outgoing>
+      <outgoing>Flow_1hdit1b</outgoing>
+    </task>
+    <task id="Id_355a3ed4-2455-4ae7-b5e0-b486af3a9105" name="OSS Service Fulfillment - Activation">
+      <documentation />
+      <extensionElements>
+        <rule:rules>
+          <rule:rule id="R_CD_NS_ffa_CHN_ZkCfGQ" type="function" code="A-14-3" name="BSS &#38; OSS Service Fulfillment &#38; Activation - Immendiate" description="Core and 3PP Services, Network Services, etc" />
+        </rule:rules>
+      </extensionElements>
+      <incoming>Flow_12j18l6</incoming>
+      <outgoing>Flow_0ah6ihi</outgoing>
+      <outgoing>Id_4d686d02-6fc5-48d4-b20b-7387c9e24585</outgoing>
+    </task>
+    <exclusiveGateway id="Gateway_0u6v33s" name="Port-in response?">
+      <incoming>Flow_123mszc</incoming>
+      <outgoing>Flow_12j18l6</outgoing>
+      <outgoing>Flow_1dta7ke</outgoing>
+    </exclusiveGateway>
+    <exclusiveGateway id="Gateway_0y26mfn" name="endif">
+      <incoming>Flow_0zjhj51</incoming>
+      <incoming>Flow_127pims</incoming>
+      <outgoing>Flow_0fslnrv</outgoing>
+    </exclusiveGateway>
+    <endEvent id="Event_1b30bns">
+      <incoming>Flow_0fslnrv</incoming>
+    </endEvent>
+    <task id="Activity_1vtvz75" name="Post request to deliver Device">
+      <documentation />
+      <incoming>Flow_1evg68h</incoming>
+      <outgoing>Flow_127pims</outgoing>
+      <outgoing>Flow_17r7g1n</outgoing>
+    </task>
+    <exclusiveGateway id="Gateway_19ib8qw" name="Order includes Device?">
+      <incoming>Flow_0a4gqki</incoming>
+      <outgoing>Flow_1evg68h</outgoing>
+      <outgoing>Flow_0zjhj51</outgoing>
+    </exclusiveGateway>
+    <exclusiveGateway id="Gateway_1uv7159" name="endif">
+      <incoming>Flow_074hzpe</incoming>
+      <incoming>Flow_1odra2d</incoming>
+      <outgoing>Flow_0a4gqki</outgoing>
+    </exclusiveGateway>
+    <task id="Activity_0gc946n" name="Post SIM card in use">
+      <incoming>Flow_1oe98hl</incoming>
+      <outgoing>Flow_1tl0a6g</outgoing>
+      <outgoing>Flow_1odra2d</outgoing>
+    </task>
+    <exclusiveGateway id="Gateway_1iqkz3r" name="SIM type?">
+      <documentation />
+      <incoming>Flow_0qxwtpu</incoming>
+      <outgoing>Flow_074hzpe</outgoing>
+      <outgoing>Flow_1oe98hl</outgoing>
+    </exclusiveGateway>
+    <task id="Activity_07y35my" name="Receive Callback for Inventory update and device delivery">
+      <documentation />
+      <incoming>Flow_1fpm91p</incoming>
+      <outgoing>Flow_0qxwtpu</outgoing>
+    </task>
+    <task id="Activity_0ku6ql7" name="Perform CRMS validations (resubmission)">
+      <incoming>Flow_0uxcmi9</incoming>
+    </task>
+    <task id="Activity_1cofeb7" name="Cancel Port-in Order">
+      <incoming>Flow_0bk7o6y</incoming>
+      <outgoing>Flow_1h43zoa</outgoing>
+      <outgoing>Flow_0s162k3</outgoing>
+    </task>
+    <task id="Activity_1qrayp8" name="Validate Port-in Order (resubmission)">
+      <incoming>Flow_0676vwq</incoming>
+      <outgoing>Flow_0uxcmi9</outgoing>
+      <outgoing>Flow_0tr58q2</outgoing>
+    </task>
+    <task id="Activity_1sgwv9e" name="Post Port-in resubmission request">
+      <incoming>Flow_0tr58q2</incoming>
+      <outgoing>Flow_095ix6p</outgoing>
+    </task>
+    <task id="Activity_1qj1e0v" name="Post Port-in cancelation request">
+      <incoming>Flow_0tnepkn</incoming>
+      <outgoing>Flow_0bk7o6y</outgoing>
+    </task>
+    <task id="Activity_14y8a5o" name="Resubmit Port-in request">
+      <outgoing>Flow_19mawok</outgoing>
+    </task>
+    <task id="Activity_1qydfap" name="Capture Port-in resubmission request">
+      <incoming>Flow_19mawok</incoming>
+      <outgoing>Flow_0676vwq</outgoing>
+    </task>
+    <task id="Activity_0ctpaup" name="Submit Port-in cancelation request">
+      <outgoing>Flow_0yfh7mb</outgoing>
+    </task>
+    <task id="Activity_0rbroim" name="Capture Port-in cancelation request">
+      <incoming>Flow_0yfh7mb</incoming>
+      <outgoing>Flow_0tnepkn</outgoing>
+    </task>
+    <task id="Activity_0at6g8t" name="Order ResubmittedX">
+      <documentation />
+      <incoming>Flow_095ix6p</incoming>
+      <incoming>Flow_0faqqsw</incoming>
+      <outgoing>Flow_13ml0bg</outgoing>
+    </task>
+    <task id="Activity_15shrim" name="Post delivery completion - pSIM delivered">
+      <documentation />
+      <incoming>Flow_049xwq1</incoming>
+      <outgoing>Flow_1keai8u</outgoing>
+    </task>
+    <task id="Activity_0wyrzg9" name="Notify delivery Completion - pSIM delivered">
+      <incoming>Flow_1ep5g6k</incoming>
+      <outgoing>Flow_049xwq1</outgoing>
+    </task>
+    <task id="Activity_0zvoww1" name="Fulfill Logistics Order to deliver SIM Card">
+      <documentation />
+      <incoming>Flow_1ak3pu7</incoming>
+      <outgoing>Flow_1ep5g6k</outgoing>
+    </task>
+    <task id="Activity_0wsuoyg" name="Post Logistics Order request to deliver SIM Card">
+      <documentation />
+      <incoming>Flow_0y88dn9</incoming>
+      <outgoing>Flow_1ak3pu7</outgoing>
+    </task>
+    <task id="Activity_0z6vbvm" name="Process request to Port-in">
+      <documentation>NPR Ack (Port ID)</documentation>
+      <incoming>Flow_1276p9g</incoming>
+    </task>
+    <task id="Activity_1swfmss" name="Fulfill Logistics Order to deliver Device">
+      <documentation />
+      <incoming>Flow_17r7g1n</incoming>
+    </task>
+    <task id="Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408" name="Mark SIM card as used">
+      <documentation />
+      <incoming>Flow_1tl0a6g</incoming>
+    </task>
+    <task id="Id_0efd2669-b950-4d2d-aa2e-edc02424d928" name="Publish Kafka event">
+      <documentation>Consumed by Case Mngmt, Campaign Mngmt, Notification Engine</documentation>
+      <incoming>Id_b8e0aa34-c837-49b3-958a-e8e357487136</incoming>
+    </task>
+    <task id="Activity_0n17894" name="Sync Port-in RFS with other Operators">
+      <documentation>NPR RFS (Port ID)</documentation>
+      <incoming>Flow_0186ni1</incoming>
+    </task>
+    <task id="Activity_1hcsk28" name="Post Port-in RFS">
+      <incoming>Flow_18uvy38</incoming>
+      <outgoing>Flow_0186ni1</outgoing>
+    </task>
+    <task id="Id_8a402122-eeb2-46b1-a5f2-9f695d2e8a88" name="Provision Network">
+      <documentation />
+      <extensionElements>
+        <rule:rules>
+          <rule:rule id="R_CD_NS_ffa_CHN_ZkCfIA" type="function" code="A-14-3" name="BSS &#38; OSS Service Fulfillment &#38; Activation - Immendiate" description="Core and 3PP Services, Network Services, etc" />
+        </rule:rules>
+      </extensionElements>
+      <incoming>Id_4d686d02-6fc5-48d4-b20b-7387c9e24585</incoming>
+    </task>
+    <task id="Id_05abb9f9-43e9-4a25-be75-0ca2dfd38502" name="Billing Synchronization">
+      <documentation />
+      <extensionElements>
+        <rule:rules>
+          <rule:rule id="R_CD_NS_ffa_CHN_ZkCfXA" type="function" code="A-14-5" name="Extra Offer/Freebies/Resources Granting" description="Applicable by Plan/Addon configuration" />
+        </rule:rules>
+      </extensionElements>
+      <incoming>Id_50eff493-0a92-44dd-bccf-2cd62cddca07</incoming>
+    </task>
+    <task id="Activity_14d0wi6" name="Process request to cancel Port-in">
+      <documentation>NPR Cancel (Port ID)</documentation>
+      <incoming>Flow_0ixfx8l</incoming>
+    </task>
+    <task id="Id_33b7ee99-afd9-40b7-bee3-a0637ee9f340" name="Synchronize with Billing">
+      <documentation />
+      <incoming>Id_2943b889-30cb-481d-adcd-b4408819a379</incoming>
+      <outgoing>Id_50eff493-0a92-44dd-bccf-2cd62cddca07</outgoing>
+    </task>
+    <task id="Activity_0fs7ehp" name="Post Port-in cancelation">
+      <incoming>Flow_1h43zoa</incoming>
+      <outgoing>Flow_0ixfx8l</outgoing>
+    </task>
+    <exclusiveGateway id="Gateway_0m3neg2" name="Port-in canceled">
+      <incoming>Flow_1mfk6nj</incoming>
+      <incoming>Flow_0s162k3</incoming>
+      <outgoing>Flow_1k4oe7m</outgoing>
+    </exclusiveGateway>
+    <intermediateThrowEvent id="Event_0me7i5f">
+      <incoming>Flow_1k4oe7m</incoming>
+    </intermediateThrowEvent>
+    <intermediateThrowEvent id="Event_0imzxiq">
+      <incoming>Flow_0q8uzey</incoming>
+    </intermediateThrowEvent>
+    <sequenceFlow id="Flow_1oy93fm" sourceRef="Event_1ryfqic" targetRef="Activity_0er1yq6" />
+    <task id="Activity_0er1yq6" name="Process feedback to Port-in request">
+      <incoming>Flow_1oy93fm</incoming>
+      <outgoing>Flow_123mszc</outgoing>
+    </task>
+    <intermediateCatchEvent id="Event_1ryfqic" name="Waiting for Port-in response">
+      <incoming>Flow_05ptgle</incoming>
+      <incoming>Flow_1gd92cd</incoming>
+      <outgoing>Flow_1oy93fm</outgoing>
+      <timerEventDefinition id="TimerEventDefinition_002913x" />
+    </intermediateCatchEvent>
+    <task id="Activity_00qw565" name="Reply Port-in response">
+      <documentation>NPR Accepted or NPR Rejected (Port ID)</documentation>
+      <outgoing>Flow_1gd92cd</outgoing>
+    </task>
+    <association id="Association_0k6fo13" associationDirection="None" sourceRef="TextAnnotation_09uns4p" targetRef="Activity_00qw565" />
+  </process>
+  <process id="Process_0ahdcyz">
+    <laneSet id="LaneSet_044s8ub" />
+    <intermediateThrowEvent id="Event_1qfu6cb">
+      <outgoing>Flow_0pum8ny</outgoing>
+    </intermediateThrowEvent>
+    <sequenceFlow id="Flow_0pum8ny" sourceRef="Event_1qfu6cb" targetRef="Gateway_0y6y0bg" />
+    <sequenceFlow id="Flow_1j00sss" name="No" sourceRef="Gateway_0y6y0bg" targetRef="Activity_1o9n9ui" />
+    <sequenceFlow id="Flow_04l4wg6" sourceRef="Activity_1o9n9ui" targetRef="Activity_19v5s44" />
+    <sequenceFlow id="Flow_0ljkcye" name="Yes" sourceRef="Gateway_0y6y0bg" targetRef="Activity_0pj31jb" />
+    <sequenceFlow id="Flow_0sche1s" sourceRef="Activity_19v5s44" targetRef="Gateway_0poi7lh" />
+    <sequenceFlow id="Flow_0xn3xc9" name="Rejected" sourceRef="Gateway_0poi7lh" targetRef="Gateway_1d7idh4" />
+    <sequenceFlow id="Flow_09ghwhh" name="Accepted" sourceRef="Gateway_0poi7lh" targetRef="Event_0rewnm4" />
+    <sequenceFlow id="Flow_1ox81sv" name="Yes" sourceRef="Gateway_1d7idh4" targetRef="Activity_0lslhvo" />
+    <sequenceFlow id="Flow_0wyzk6b" name="No" sourceRef="Gateway_1d7idh4" targetRef="Event_17hnuwl" />
+    <sequenceFlow id="Flow_196qhgh" sourceRef="Activity_0pj31jb" targetRef="Event_0891rtg" />
+    <exclusiveGateway id="Gateway_0y6y0bg" name="Decide to Cancel the Port-in request?">
+      <incoming>Flow_0pum8ny</incoming>
+      <outgoing>Flow_1j00sss</outgoing>
+      <outgoing>Flow_0ljkcye</outgoing>
+    </exclusiveGateway>
+    <intermediateThrowEvent id="Event_0rewnm4">
+      <incoming>Flow_09ghwhh</incoming>
+    </intermediateThrowEvent>
+    <endEvent id="Event_17hnuwl">
+      <incoming>Flow_0wyzk6b</incoming>
+    </endEvent>
+    <endEvent id="Event_0891rtg">
+      <incoming>Flow_196qhgh</incoming>
+    </endEvent>
+    <task id="Activity_0pj31jb" name="Request to cancel the Port-in">
+      <incoming>Flow_0ljkcye</incoming>
+      <outgoing>Flow_196qhgh</outgoing>
+    </task>
+    <task id="Activity_1o9n9ui" name="Reply to the Port-out SMS sent by the current Donor">
+      <incoming>Flow_1j00sss</incoming>
+      <outgoing>Flow_04l4wg6</outgoing>
+    </task>
+    <task id="Activity_19v5s44" name="Receive feedback to Port-in request">
+      <incoming>Flow_04l4wg6</incoming>
+      <outgoing>Flow_0sche1s</outgoing>
+    </task>
+    <task id="Activity_0lslhvo" name="Request to resubmit the Port-in">
+      <incoming>Flow_1ox81sv</incoming>
+    </task>
+    <exclusiveGateway id="Gateway_1d7idh4" name="Decide to resubmit?">
+      <documentation />
+      <incoming>Flow_0xn3xc9</incoming>
+      <outgoing>Flow_1ox81sv</outgoing>
+      <outgoing>Flow_0wyzk6b</outgoing>
+    </exclusiveGateway>
+    <exclusiveGateway id="Gateway_0poi7lh" name="Response to Port-in request">
+      <incoming>Flow_0sche1s</incoming>
+      <outgoing>Flow_0xn3xc9</outgoing>
+      <outgoing>Flow_09ghwhh</outgoing>
+    </exclusiveGateway>
+  </process>
+  <category id="Category_ZkQd_Q">
+    <categoryValue id="CategoryValue_ZkQd_Q" value="Fulfillment &#38; Activation PORTIN" />
+  </category>
+  <BPMNDiagram xmlns="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Diagram_554623d9-23f2-4071-9138-4d9880ac1508">
+    <BPMNPlane id="DiagramElement_4ff69d5a-35a8-410b-aecf-19c36289c6cf" bpmnElement="Id_97f7db81-3036-4505-817b-4463160e6f88">
+      <extension xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+      <BPMNShape id="DiagramElement_2bab59aa-2ea9-4d4a-b65b-b650e8ad9435" bpmnElement="Id_226100e3-99f3-4613-ad0c-45f1e41b5429" isHorizontal="true">
+        <extension xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <Bounds xmlns="http://www.omg.org/spec/DD/20100524/DC" x="3570" y="596" width="3440" height="1740" />
+        <BPMNLabel id="DiagramElement_589cf34a-c01f-4079-88c3-d716da1b0b87" labelStyle="Style_22d1efa9-7472-4c92-81fa-4ed497654567">
+          <extension xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Lane_0g79kfx_di" bpmnElement="Lane_0g79kfx" isHorizontal="true" bioc:stroke="#0d4372" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#0d4372">
+        <dc:Bounds x="3600" y="736" width="3410" height="1600" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_08cob6g_di" bpmnElement="Lane_08cob6g" isHorizontal="true">
+        <dc:Bounds x="3630" y="1616" width="3380" height="120" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_05vh0s7_di" bpmnElement="Lane_05vh0s7" isHorizontal="true">
+        <dc:Bounds x="3630" y="2216" width="3380" height="120" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_0ypy8mx_di" bpmnElement="Lane_0ypy8mx" isHorizontal="true">
+        <dc:Bounds x="3630" y="2096" width="3380" height="120" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_1xjypxz_di" bpmnElement="Lane_1xjypxz" isHorizontal="true">
+        <dc:Bounds x="3630" y="1976" width="3380" height="120" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_16gzl3n_di" bpmnElement="Lane_16gzl3n" isHorizontal="true">
+        <dc:Bounds x="3630" y="1856" width="3380" height="120" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_0wxrwo2_di" bpmnElement="Lane_0wxrwo2" isHorizontal="true">
+        <dc:Bounds x="3630" y="1736" width="3380" height="120" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_0sdx6lg_di" bpmnElement="Lane_0sdx6lg" isHorizontal="true">
+        <dc:Bounds x="3630" y="1496" width="3380" height="120" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_03xzr2t_di" bpmnElement="Lane_03xzr2t" isHorizontal="true">
+        <dc:Bounds x="3630" y="1096" width="3380" height="400" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_14dgd9e_di" bpmnElement="Lane_14dgd9e" isHorizontal="true">
+        <dc:Bounds x="3630" y="876" width="3380" height="220" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_0nchhnt_di" bpmnElement="Lane_0nchhnt" isHorizontal="true">
+        <dc:Bounds x="3630" y="736" width="3380" height="140" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_1aqu4ho_di" bpmnElement="Lane_1aqu4ho" isHorizontal="true" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="3600" y="596" width="3410" height="140" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Lane_0k5l385_di" bpmnElement="Lane_0k5l385" isHorizontal="true">
+        <dc:Bounds x="3630" y="596" width="3380" height="140" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Gateway_0r20x7i_di" bpmnElement="Gateway_0r20x7i" isMarkerVisible="true">
+        <dc:Bounds x="4445" y="1381" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="4457" y="1438" width="26" height="14" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Activity_0r87n5x_di" bpmnElement="Activity_0r87n5x">
+        <dc:Bounds x="4320" y="1366" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1r47mqk_di" bpmnElement="Activity_1r47mqk">
+        <dc:Bounds x="4170" y="1366" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0fu3e4x_di" bpmnElement="Activity_0fu3e4x">
+        <dc:Bounds x="4520" y="1366" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Gateway_1icfqwu_di" bpmnElement="Gateway_1icfqwu" isMarkerVisible="true">
+        <dc:Bounds x="4075" y="1381" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="4064" y="1431" width="72" height="40" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Activity_1eqsdny_di" bpmnElement="Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f">
+        <dc:Bounds x="3938" y="1366" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Activity_1rm1mk4_di" bpmnElement="Id_9bcb3e93-3bf8-49eb-a1b1-e9cc8d9c8e1d">
+        <dc:Bounds x="3785" y="1366" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Activity_1tni4j2_di" bpmnElement="Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74">
+        <dc:Bounds x="3785" y="946" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Event_156e4wi_di" bpmnElement="Event_156e4wi">
+        <dc:Bounds x="3692" y="968" width="36" height="36" />
+      </BPMNShape>
+      <BPMNShape id="Activity_0q3lpqa_di" bpmnElement="Id_af69b80c-765a-4ae7-be40-22cb244b611b">
+        <dc:Bounds x="6080" y="1366" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Activity_1176p0t_di" bpmnElement="Activity_1176p0t">
+        <dc:Bounds x="5930" y="1366" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_14lam75_di" bpmnElement="Id_3f5cd1e3-761d-4613-90ae-792af851635d">
+        <dc:Bounds x="5790" y="1366" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Gateway_15nz4h8_di" bpmnElement="Gateway_15nz4h8" isMarkerVisible="true">
+        <dc:Bounds x="5351" y="1278" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="5409" y="1293" width="62" height="14" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Activity_1c2vl3t_di" bpmnElement="Id_40e7d082-7ecb-4720-989c-ca65c390f2a6">
+        <dc:Bounds x="5637" y="1366" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Activity_1xo35c4_di" bpmnElement="Id_355a3ed4-2455-4ae7-b5e0-b486af3a9105">
+        <dc:Bounds x="5487" y="1366" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Gateway_0u6v33s_di" bpmnElement="Gateway_0u6v33s" isMarkerVisible="true">
+        <dc:Bounds x="5351" y="1381" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="5333" y="1441" width="87" height="14" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Gateway_0y26mfn_di" bpmnElement="Gateway_0y26mfn" isMarkerVisible="true">
+        <dc:Bounds x="6815" y="961" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="6827" y="1018" width="26" height="14" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Event_1b30bns_di" bpmnElement="Event_1b30bns">
+        <dc:Bounds x="6932" y="968" width="36" height="36" />
+      </BPMNShape>
+      <BPMNShape id="Activity_1vtvz75_di" bpmnElement="Activity_1vtvz75">
+        <dc:Bounds x="6680" y="946" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Gateway_19ib8qw_di" bpmnElement="Gateway_19ib8qw" isMarkerVisible="true">
+        <dc:Bounds x="6575" y="961" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="6564" y="1018" width="72" height="27" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Gateway_1uv7159_di" bpmnElement="Gateway_1uv7159" isMarkerVisible="true">
+        <dc:Bounds x="6475" y="961" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="6487" y="1018" width="26" height="14" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Activity_0gc946n_di" bpmnElement="Activity_0gc946n">
+        <dc:Bounds x="6330" y="946" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Gateway_1iqkz3r_di" bpmnElement="Gateway_1iqkz3r" isMarkerVisible="true">
+        <dc:Bounds x="6235" y="961" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="6235" y="1011" width="50" height="14" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Activity_07y35my_di" bpmnElement="Activity_07y35my">
+        <dc:Bounds x="6080" y="946" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0ku6ql7_di" bpmnElement="Activity_0ku6ql7">
+        <dc:Bounds x="5080" y="1189" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1cofeb7_di" bpmnElement="Activity_1cofeb7">
+        <dc:Bounds x="4780" y="1127" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1qrayp8_di" bpmnElement="Activity_1qrayp8">
+        <dc:Bounds x="5080" y="946" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1sgwv9e_di" bpmnElement="Activity_1sgwv9e">
+        <dc:Bounds x="5220" y="946" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1qj1e0v_di" bpmnElement="Activity_1qj1e0v">
+        <dc:Bounds x="4780" y="946" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_14y8a5o_di" bpmnElement="Activity_14y8a5o">
+        <dc:Bounds x="5080" y="626" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1qydfap_di" bpmnElement="Activity_1qydfap">
+        <dc:Bounds x="5080" y="766" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0ctpaup_di" bpmnElement="Activity_0ctpaup">
+        <dc:Bounds x="4780" y="626" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0rbroim_di" bpmnElement="Activity_0rbroim">
+        <dc:Bounds x="4780" y="766" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0at6g8t_di" bpmnElement="Activity_0at6g8t">
+        <dc:Bounds x="5220" y="1263" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_15shrim_di" bpmnElement="Activity_15shrim">
+        <dc:Bounds x="4320" y="1514" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0wyrzg9_di" bpmnElement="Activity_0wyrzg9">
+        <dc:Bounds x="4320" y="1640" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0zvoww1_di" bpmnElement="Activity_0zvoww1">
+        <dc:Bounds x="4170" y="1640" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0wsuoyg_di" bpmnElement="Activity_0wsuoyg">
+        <dc:Bounds x="4170" y="1514" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0z6vbvm_di" bpmnElement="Activity_0z6vbvm">
+        <dc:Bounds x="4520" y="2246" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1swfmss_di" bpmnElement="Activity_1swfmss">
+        <dc:Bounds x="6680" y="1640" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1v64q01_di" bpmnElement="Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408">
+        <dc:Bounds x="6330" y="1996" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Activity_1ma3amy_di" bpmnElement="Id_0efd2669-b950-4d2d-aa2e-edc02424d928">
+        <dc:Bounds x="6080" y="2126" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Activity_0n17894_di" bpmnElement="Activity_0n17894">
+        <dc:Bounds x="5930" y="2246" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1hcsk28_di" bpmnElement="Activity_1hcsk28">
+        <dc:Bounds x="5930" y="1514" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0gdb829_di" bpmnElement="Id_8a402122-eeb2-46b1-a5f2-9f695d2e8a88">
+        <dc:Bounds x="5487" y="1876" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Activity_1pgyl55_di" bpmnElement="Id_05abb9f9-43e9-4a25-be75-0ca2dfd38502">
+        <dc:Bounds x="5637" y="1766" width="100" height="80" />
+      </BPMNShape>
+      <BPMNShape id="Activity_14d0wi6_di" bpmnElement="Activity_14d0wi6">
+        <dc:Bounds x="4780" y="2246" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1kcoi9p_di" bpmnElement="Id_33b7ee99-afd9-40b7-bee3-a0637ee9f340">
+        <dc:Bounds x="5637" y="1514" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0fs7ehp_di" bpmnElement="Activity_0fs7ehp">
+        <dc:Bounds x="4780" y="1514" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Gateway_1w9p90h_di" bpmnElement="Gateway_0m3neg2" isMarkerVisible="true">
+        <dc:Bounds x="5351" y="1142" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="5336" y="1122" width="80" height="14" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Event_0me7i5f_di" bpmnElement="Event_0me7i5f">
+        <dc:Bounds x="6942" y="1149" width="36" height="36" />
+      </BPMNShape>
+      <BPMNShape id="Event_0imzxiq_di" bpmnElement="Event_0imzxiq">
+        <dc:Bounds x="6942" y="1388" width="36" height="36" />
+      </BPMNShape>
+      <BPMNShape id="Activity_0er1yq6_di" bpmnElement="Activity_0er1yq6">
+        <dc:Bounds x="5170" y="1366" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Event_0inlq9e_di" bpmnElement="Event_1ryfqic">
+        <dc:Bounds x="5082" y="1388" width="36" height="36" />
+        <BPMNLabel>
+          <dc:Bounds x="5065" y="1356" width="79" height="27" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Activity_00qw565_di" bpmnElement="Activity_00qw565">
+        <dc:Bounds x="5050" y="2246" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNEdge id="Flow_0q8uzey_di" bpmnElement="Flow_0q8uzey">
+        <di:waypoint x="6180" y="1406" />
+        <di:waypoint x="6942" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_65f5bc7f-0fdd-4516-bc76-d2c3ece3a521" bpmnElement="Id_b8e0aa34-c837-49b3-958a-e8e357487136">
+        <extension xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <di:waypoint x="6125" y="1446" />
+        <di:waypoint x="6125" y="2126" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0186ni1_di" bpmnElement="Flow_0186ni1">
+        <di:waypoint x="5980" y="1594" />
+        <di:waypoint x="5980" y="2246" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0c2deou_di" bpmnElement="Flow_0c2deou">
+        <di:waypoint x="6030" y="1406" />
+        <di:waypoint x="6080" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_18uvy38_di" bpmnElement="Flow_18uvy38">
+        <di:waypoint x="5980" y="1446" />
+        <di:waypoint x="5980" y="1514" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0fefwwu_di" bpmnElement="Flow_0fefwwu">
+        <di:waypoint x="5890" y="1406" />
+        <di:waypoint x="5930" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1hdit1b_di" bpmnElement="Flow_1hdit1b">
+        <di:waypoint x="5737" y="1406" />
+        <di:waypoint x="5790" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0ah6ihi_di" bpmnElement="Flow_0ah6ihi">
+        <di:waypoint x="5587" y="1406" />
+        <di:waypoint x="5637" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_aa33f141-17a6-403b-9dec-323a09dd33fa" bpmnElement="Id_4d686d02-6fc5-48d4-b20b-7387c9e24585">
+        <extension xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <di:waypoint x="5537" y="1446" />
+        <di:waypoint x="5537" y="1876" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1dta7ke_di" bpmnElement="Flow_1dta7ke">
+        <di:waypoint x="5376" y="1381" />
+        <di:waypoint x="5376" y="1328" />
+        <BPMNLabel>
+          <dc:Bounds x="5388" y="1342" width="44" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_12j18l6_di" bpmnElement="Flow_12j18l6">
+        <di:waypoint x="5401" y="1406" />
+        <di:waypoint x="5487" y="1406" />
+        <BPMNLabel>
+          <dc:Bounds x="5419" y="1392" width="45" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_123mszc_di" bpmnElement="Flow_123mszc">
+        <di:waypoint x="5270" y="1406" />
+        <di:waypoint x="5351" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_272d2ae6-bb9e-4b92-9f37-2b4e79545792" bpmnElement="Id_50eff493-0a92-44dd-bccf-2cd62cddca07">
+        <extension xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <di:waypoint x="5687" y="1594" />
+        <di:waypoint x="5687" y="1766" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_9b6b451d-5de1-4dd0-8ddb-98a7e3806f14" bpmnElement="Id_2943b889-30cb-481d-adcd-b4408819a379">
+        <extension xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <di:waypoint x="5687" y="1446" />
+        <di:waypoint x="5687" y="1514" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0ixfx8l_di" bpmnElement="Flow_0ixfx8l">
+        <di:waypoint x="4830" y="1594" />
+        <di:waypoint x="4830" y="2246" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_16yjphj_di" bpmnElement="Flow_16yjphj">
+        <di:waypoint x="4420" y="1406" />
+        <di:waypoint x="4445" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1keai8u_di" bpmnElement="Flow_1keai8u">
+        <di:waypoint x="4370" y="1514" />
+        <di:waypoint x="4370" y="1446" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_049xwq1_di" bpmnElement="Flow_049xwq1">
+        <di:waypoint x="4370" y="1640" />
+        <di:waypoint x="4370" y="1594" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1ep5g6k_di" bpmnElement="Flow_1ep5g6k">
+        <di:waypoint x="4270" y="1680" />
+        <di:waypoint x="4320" y="1680" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1ak3pu7_di" bpmnElement="Flow_1ak3pu7">
+        <di:waypoint x="4220" y="1594" />
+        <di:waypoint x="4220" y="1640" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0y88dn9_di" bpmnElement="Flow_0y88dn9">
+        <di:waypoint x="4220" y="1446" />
+        <di:waypoint x="4220" y="1514" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_05ptgle_di" bpmnElement="Flow_05ptgle">
+        <di:waypoint x="4620" y="1406" />
+        <di:waypoint x="5082" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1276p9g_di" bpmnElement="Flow_1276p9g">
+        <di:waypoint x="4570" y="1446" />
+        <di:waypoint x="4570" y="2246" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_07j53s2_di" bpmnElement="Flow_07j53s2">
+        <di:waypoint x="4495" y="1406" />
+        <di:waypoint x="4520" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_13ml0bg_di" bpmnElement="Flow_13ml0bg">
+        <di:waypoint x="5220" y="1303" />
+        <di:waypoint x="4570" y="1303" />
+        <di:waypoint x="4570" y="1366" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_130p8wk_di" bpmnElement="Flow_130p8wk">
+        <di:waypoint x="4100" y="1381" />
+        <di:waypoint x="4100" y="1330" />
+        <di:waypoint x="4470" y="1330" />
+        <di:waypoint x="4470" y="1381" />
+        <BPMNLabel>
+          <dc:Bounds x="4112" y="1312" width="15" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_015s3i1_di" bpmnElement="Flow_015s3i1">
+        <di:waypoint x="4125" y="1406" />
+        <di:waypoint x="4170" y="1406" />
+        <BPMNLabel>
+          <dc:Bounds x="4139" y="1388" width="18" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1ua3zby_di" bpmnElement="Flow_1ua3zby">
+        <di:waypoint x="4038" y="1406" />
+        <di:waypoint x="4075" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_118k12t_di" bpmnElement="Flow_118k12t">
+        <di:waypoint x="3885" y="1406" />
+        <di:waypoint x="3938" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0fslnrv_di" bpmnElement="Flow_0fslnrv">
+        <di:waypoint x="6865" y="986" />
+        <di:waypoint x="6932" y="986" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_17r7g1n_di" bpmnElement="Flow_17r7g1n">
+        <di:waypoint x="6730" y="1026" />
+        <di:waypoint x="6730" y="1640" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_127pims_di" bpmnElement="Flow_127pims">
+        <di:waypoint x="6780" y="986" />
+        <di:waypoint x="6815" y="986" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0zjhj51_di" bpmnElement="Flow_0zjhj51">
+        <di:waypoint x="6600" y="961" />
+        <di:waypoint x="6600" y="910" />
+        <di:waypoint x="6840" y="910" />
+        <di:waypoint x="6840" y="961" />
+        <BPMNLabel>
+          <dc:Bounds x="6613" y="892" width="15" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1evg68h_di" bpmnElement="Flow_1evg68h">
+        <di:waypoint x="6625" y="986" />
+        <di:waypoint x="6680" y="986" />
+        <BPMNLabel>
+          <dc:Bounds x="6644" y="968" width="18" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0a4gqki_di" bpmnElement="Flow_0a4gqki">
+        <di:waypoint x="6525" y="986" />
+        <di:waypoint x="6575" y="986" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1odra2d_di" bpmnElement="Flow_1odra2d">
+        <di:waypoint x="6430" y="986" />
+        <di:waypoint x="6475" y="986" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1tl0a6g_di" bpmnElement="Flow_1tl0a6g">
+        <di:waypoint x="6380" y="1026" />
+        <di:waypoint x="6380" y="1996" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1oe98hl_di" bpmnElement="Flow_1oe98hl">
+        <di:waypoint x="6285" y="986" />
+        <di:waypoint x="6330" y="986" />
+        <BPMNLabel>
+          <dc:Bounds x="6294" y="968" width="27" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_074hzpe_di" bpmnElement="Flow_074hzpe">
+        <di:waypoint x="6260" y="961" />
+        <di:waypoint x="6260" y="910" />
+        <di:waypoint x="6500" y="910" />
+        <di:waypoint x="6500" y="961" />
+        <BPMNLabel>
+          <dc:Bounds x="6367" y="892" width="27" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0qxwtpu_di" bpmnElement="Flow_0qxwtpu">
+        <di:waypoint x="6180" y="986" />
+        <di:waypoint x="6235" y="986" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1fpm91p_di" bpmnElement="Flow_1fpm91p">
+        <di:waypoint x="6130" y="1366" />
+        <di:waypoint x="6130" y="1026" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1k4oe7m_di" bpmnElement="Flow_1k4oe7m">
+        <di:waypoint x="5401" y="1167" />
+        <di:waypoint x="6942" y="1167" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1mfk6nj_di" bpmnElement="Flow_1mfk6nj">
+        <di:waypoint x="5376" y="1278" />
+        <di:waypoint x="5376" y="1192" />
+        <BPMNLabel>
+          <dc:Bounds x="5389" y="1207" width="81" height="40" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1h43zoa_di" bpmnElement="Flow_1h43zoa">
+        <di:waypoint x="4830" y="1207" />
+        <di:waypoint x="4830" y="1514" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0s162k3_di" bpmnElement="Flow_0s162k3">
+        <di:waypoint x="4880" y="1167" />
+        <di:waypoint x="5351" y="1167" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0uxcmi9_di" bpmnElement="Flow_0uxcmi9">
+        <di:waypoint x="5130" y="1026" />
+        <di:waypoint x="5130" y="1189" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0tr58q2_di" bpmnElement="Flow_0tr58q2">
+        <di:waypoint x="5180" y="986" />
+        <di:waypoint x="5220" y="986" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0bk7o6y_di" bpmnElement="Flow_0bk7o6y">
+        <di:waypoint x="4830" y="1026" />
+        <di:waypoint x="4830" y="1127" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0676vwq_di" bpmnElement="Flow_0676vwq">
+        <di:waypoint x="5130" y="846" />
+        <di:waypoint x="5130" y="946" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_19mawok_di" bpmnElement="Flow_19mawok">
+        <di:waypoint x="5130" y="706" />
+        <di:waypoint x="5130" y="766" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0tnepkn_di" bpmnElement="Flow_0tnepkn">
+        <di:waypoint x="4830" y="846" />
+        <di:waypoint x="4830" y="946" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0yfh7mb_di" bpmnElement="Flow_0yfh7mb">
+        <di:waypoint x="4830" y="706" />
+        <di:waypoint x="4830" y="766" />
+      </BPMNEdge>
+      <BPMNEdge id="DiagramElement_cb8094a5-fa9e-45f2-ab85-4c574b554e07" bpmnElement="Id_d2bda2f8-caca-4b20-b396-e0967744f60f">
+        <extension xmlns="http://www.omg.org/spec/DD/20100524/DI" />
+        <di:waypoint x="3835" y="1026" />
+        <di:waypoint x="3835" y="1366" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_18p2usn_di" bpmnElement="Flow_18p2usn">
+        <di:waypoint x="3728" y="986" />
+        <di:waypoint x="3785" y="986" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1gd92cd_di" bpmnElement="Flow_1gd92cd">
+        <di:waypoint x="5100" y="2246" />
+        <di:waypoint x="5100" y="1424" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_095ix6p_di" bpmnElement="Flow_095ix6p">
+        <di:waypoint x="5270" y="1026" />
+        <di:waypoint x="5270" y="1263" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0faqqsw_di" bpmnElement="Flow_0faqqsw">
+        <di:waypoint x="5351" y="1303" />
+        <di:waypoint x="5320" y="1303" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1oy93fm_di" bpmnElement="Flow_1oy93fm">
+        <di:waypoint x="5118" y="1406" />
+        <di:waypoint x="5170" y="1406" />
+      </BPMNEdge>
+      <BPMNEdge id="Association_0k6fo13_di" bpmnElement="Association_0k6fo13">
+        <di:waypoint x="5240" y="2266" />
+        <di:waypoint x="5150" y="2284" />
+      </BPMNEdge>
+      <BPMNShape id="Participant_1qxh03t_di" bpmnElement="Participant_1qxh03t" isHorizontal="true" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="3570" y="190" width="3460" height="376" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Event_1qfu6cb_di" bpmnElement="Event_1qfu6cb">
+        <dc:Bounds x="3702" y="262" width="36" height="36" />
+      </BPMNShape>
+      <BPMNShape id="Gateway_0y6y0bg_di" bpmnElement="Gateway_0y6y0bg" isMarkerVisible="true">
+        <dc:Bounds x="4475" y="255" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="4459" y="210" width="84" height="40" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Event_0rewnm4_di" bpmnElement="Event_0rewnm4">
+        <dc:Bounds x="6952" y="262" width="36" height="36" />
+      </BPMNShape>
+      <BPMNShape id="Event_17hnuwl_di" bpmnElement="Event_17hnuwl">
+        <dc:Bounds x="6952" y="342" width="36" height="36" />
+      </BPMNShape>
+      <BPMNShape id="Event_0891rtg_di" bpmnElement="Event_0891rtg">
+        <dc:Bounds x="6952" y="402" width="36" height="36" />
+      </BPMNShape>
+      <BPMNShape id="Activity_0pj31jb_di" bpmnElement="Activity_0pj31jb">
+        <dc:Bounds x="4780" y="380" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_1o9n9ui_di" bpmnElement="Activity_1o9n9ui">
+        <dc:Bounds x="4780" y="240" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_19v5s44_di" bpmnElement="Activity_19v5s44">
+        <dc:Bounds x="4930" y="240" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Activity_0lslhvo_di" bpmnElement="Activity_0lslhvo">
+        <dc:Bounds x="5080" y="466" width="100" height="80" />
+        <BPMNLabel />
+      </BPMNShape>
+      <BPMNShape id="Gateway_1d7idh4_di" bpmnElement="Gateway_1d7idh4" isMarkerVisible="true">
+        <dc:Bounds x="5105" y="335" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="5045" y="346" width="49" height="27" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="Gateway_0poi7lh_di" bpmnElement="Gateway_0poi7lh" isMarkerVisible="true">
+        <dc:Bounds x="5105" y="255" width="50" height="50" />
+        <BPMNLabel>
+          <dc:Bounds x="5086" y="226" width="90" height="27" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNEdge id="Flow_0pum8ny_di" bpmnElement="Flow_0pum8ny">
+        <di:waypoint x="3738" y="280" />
+        <di:waypoint x="4475" y="280" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1j00sss_di" bpmnElement="Flow_1j00sss">
+        <di:waypoint x="4525" y="280" />
+        <di:waypoint x="4780" y="280" />
+        <BPMNLabel>
+          <dc:Bounds x="4574" y="262" width="15" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_04l4wg6_di" bpmnElement="Flow_04l4wg6">
+        <di:waypoint x="4880" y="280" />
+        <di:waypoint x="4930" y="280" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0ljkcye_di" bpmnElement="Flow_0ljkcye">
+        <di:waypoint x="4500" y="305" />
+        <di:waypoint x="4500" y="420" />
+        <di:waypoint x="4780" y="420" />
+        <BPMNLabel>
+          <dc:Bounds x="4587" y="393" width="18" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0sche1s_di" bpmnElement="Flow_0sche1s">
+        <di:waypoint x="5030" y="280" />
+        <di:waypoint x="5105" y="280" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0xn3xc9_di" bpmnElement="Flow_0xn3xc9">
+        <di:waypoint x="5130" y="305" />
+        <di:waypoint x="5130" y="335" />
+        <BPMNLabel>
+          <dc:Bounds x="5138" y="303" width="44" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_09ghwhh_di" bpmnElement="Flow_09ghwhh">
+        <di:waypoint x="5155" y="280" />
+        <di:waypoint x="6952" y="280" />
+        <BPMNLabel>
+          <dc:Bounds x="5169" y="262" width="45" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_1ox81sv_di" bpmnElement="Flow_1ox81sv">
+        <di:waypoint x="5130" y="385" />
+        <di:waypoint x="5130" y="466" />
+        <BPMNLabel>
+          <dc:Bounds x="5133" y="421" width="18" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_0wyzk6b_di" bpmnElement="Flow_0wyzk6b">
+        <di:waypoint x="5155" y="360" />
+        <di:waypoint x="6952" y="360" />
+        <BPMNLabel>
+          <dc:Bounds x="5164" y="342" width="15" height="14" />
+        </BPMNLabel>
+      </BPMNEdge>
+      <BPMNEdge id="Flow_196qhgh_di" bpmnElement="Flow_196qhgh">
+        <di:waypoint x="4880" y="420" />
+        <di:waypoint x="6952" y="420" />
+      </BPMNEdge>
+      <BPMNShape id="Group_1mm4b91_di" bpmnElement="Group_1mm4b91">
+        <dc:Bounds x="3750" y="130" width="3170" height="2220" />
+        <BPMNLabel>
+          <dc:Bounds x="5304" y="140" width="62" height="40" />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="BPMNShape_1d18j8m" bpmnElement="TextAnnotation_0qqdz42">
+        <di:extension />
+        <dc:Bounds x="5820" y="2236" width="120" height="27" />
+        <BPMNLabel>
+          <di:extension />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="BPMNShape_1r6lyjq" bpmnElement="TextAnnotation_09uns4p">
+        <di:extension />
+        <dc:Bounds x="5240" y="2230" width="140" height="40" />
+        <BPMNLabel>
+          <di:extension />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="BPMNShape_18vh8a0" bpmnElement="TextAnnotation_0tpsbu8">
+        <di:extension />
+        <dc:Bounds x="4960" y="2222" width="70" height="55" />
+        <BPMNLabel>
+          <di:extension />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNShape id="BPMNShape_1l06eic" bpmnElement="TextAnnotation_0jl7dhj">
+        <di:extension />
+        <dc:Bounds x="4420" y="2237" width="70" height="41" />
+        <BPMNLabel>
+          <di:extension />
+        </BPMNLabel>
+      </BPMNShape>
+      <BPMNEdge id="Association_154awiy_di" bpmnElement="Association_154awiy">
+        <di:waypoint x="5913" y="2263" />
+        <di:waypoint x="5930" y="2269" />
+      </BPMNEdge>
+      <BPMNEdge id="Association_1ouoxdn_di" bpmnElement="Association_1ouoxdn">
+        <di:waypoint x="4960" y="2257" />
+        <di:waypoint x="4880" y="2273" />
+      </BPMNEdge>
+      <BPMNEdge id="Association_0kkc171_di" bpmnElement="Association_0kkc171">
+        <di:waypoint x="4490" y="2267" />
+        <di:waypoint x="4520" y="2274" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_185g69h_di" bpmnElement="Flow_185g69h">
+        <di:waypoint x="4830" y="460" />
+        <di:waypoint x="4830" y="626" />
+      </BPMNEdge>
+      <BPMNEdge id="Flow_15rkosk_di" bpmnElement="Flow_15rkosk">
+        <di:waypoint x="5130" y="546" />
+        <di:waypoint x="5130" y="626" />
+      </BPMNEdge>
+    </BPMNPlane>
+    <BPMNLabelStyle id="Style_ed58c28e-0918-4674-b742-680e03110432">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_77e38b61-b621-4d5c-9b92-f2e1c48b2677">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_22d1efa9-7472-4c92-81fa-4ed497654567">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_777a6f96-c8d8-474f-84cd-6e11afac5dab">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_39475892-de8c-4d8a-9259-288e25e640e9">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_cc56ac4c-ceae-4948-a892-261e5dc57c07">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_dbbbe15a-c639-4080-b584-f8c6042988f8">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_613959c9-f57f-428f-aeea-376ad3bfdc7c">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_f7e46f42-7b14-415b-9d43-40ca4ff6c5c3">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_ab93703a-7ddd-42be-8926-8b9cfd49020d">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_a567bb12-2662-476e-863f-b10832c71a99">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_96c3c4d7-7958-43fe-a0da-9fa977e69e2a">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_55f6fc51-17cf-460b-9fa3-89f256b19f6f">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_f62727b7-3faa-4086-81d0-b3899ebe0976">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_aba1ae72-42f7-40e7-9ae7-65da55f30c45">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_1eedb456-53da-4d0a-987f-0d43b212896e">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_ff29db34-c998-48a5-9ee7-8420c67b6a54">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_a46633b5-1e2d-425e-a20f-b37ba9b78fb9">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_2a6c40ee-7673-4074-8f34-d9b09f855006">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_8c64f346-8236-4331-8704-8c1a41e1e758">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_00fb20ec-4a8e-44b8-b309-3e6bc8c1a0d4">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_df9c7538-de70-476c-8a20-fcceba89a622">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_ca5ab039-1800-404b-a983-2d57933eb83b">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_de3cd1ea-623b-41b5-825f-f6d6cad885f7">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_e966f894-f702-4c81-84e6-b297e72d1177">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_8aa5cb94-22d4-463d-bcb9-685e44535cb4">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_7df8b4ca-f98e-4b5c-b6ec-949857cd5069">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_a6654077-2ef6-412a-b24a-d40dfb7f2b36">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_db18b31a-b24f-4497-8756-4871d025425a">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_9a877a0b-07eb-4cae-870a-3a785f304e46">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_12197fa4-243b-4fa1-910e-7100694dbd87">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4333f75a-2a8a-4ccd-8ff7-9da4030555e7">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_e148b3b6-bbd7-4d41-92c5-40aec3e798f5">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_e4899981-ab95-4d24-a7d2-572f1527e141">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_1d083ae2-bce7-4325-9786-7531db32141a">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_426c4d1e-1fc4-4ae8-a1a6-616f4da7bb21">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_f618aa51-d164-4caa-b5f9-34a4a39b96e3">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_6d821970-3c26-435d-9a7d-02626034bdfa">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_f58e62d3-cc30-47e9-8afa-70125d05cd90">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_9e58ad9e-6965-45e5-9204-90f6748a9795">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_56592375-7ec9-4245-be7c-75ac6571e966">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_8d56cd93-9e7b-4251-809a-4c79b67da948">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_7e2af4d5-393b-46ca-9803-23916f695eed">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_67f6d4a6-247b-4049-8af0-f23285a14046">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_22bf7437-b3db-4e4f-b714-b8bac3639b7f">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_033fe7dc-df4b-49af-ab9d-cdf3815d04f5">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_5e8eb000-d3e0-4e23-b581-b74e94d5193d">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_1b30e874-27ce-4ce4-bb73-a954931da076">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_5f72dae5-07ea-45f7-9fcf-9df41863c7ef">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_a6eedbbb-d3c4-42d5-8e9a-9127273ab610">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_eae96e3b-97cb-4afa-a05c-386f141c34f0">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_446f9759-d23f-4504-b5ce-7b1d857f9720">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_73a3715a-10fa-4dcc-bd45-6db48f87e577">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_ee2a7933-b814-4c49-97a9-a4f92d3f851f">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_c3a6b24e-448a-4a12-a512-fe56214b54ec">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_b870b8b6-49ff-442b-9fdd-747bd8905db1">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_776ec61b-61d7-47af-9cf2-cfa675653136">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_89076abd-044b-4b23-83f6-7ab05a361143">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_649466c9-30ee-40c1-94c6-da95b4183134">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_3d59cc66-74ad-41cb-b42e-1484e84777b6">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4c6078ce-c88f-4753-a9d4-9b89da2b069e">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4ca98e7c-422d-4321-b904-783397536399">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_6c22ee40-32fd-4b6c-bc72-aa02e712dba8">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_ca532edf-a787-4e43-a0c3-d88bdefcdf12">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_54d058d8-2577-4ea1-a84c-57e4e29d231f">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_d71f3b9b-df77-4d35-b324-93af73cc0bab">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_3602f5e0-0355-426f-9ae3-8e3907b9977f">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_d485f2bc-9d99-4825-ac58-bc9429755b19">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_8f4fe467-0355-4c83-98e2-c548b7fae4f8">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_f2ffb4c5-fd0a-4756-96ea-0e2fceeb28e3">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_096c0fe5-5f32-4284-8b42-3afd3222d932">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_41c81265-dfee-413c-95f0-30ca0e75a2af">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_b691a1c9-c028-42b0-8c3c-4a0ca0673945">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_c6cb7150-5c54-4cc7-bebe-4ad8b40c8eb9">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_7b63d9f8-45a3-43e1-a250-869dbd985b2d">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_d02435b1-839f-4af1-b35f-d6a5faabfe66">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_d4b182ce-3ccb-4047-bb42-12b040d9b26d">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_f0e1c730-5e81-47dd-8bf1-98519c7b5332">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4816a5e7-f4b3-4557-ada4-2570606df7b3">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4c3f22fc-e782-4c04-8fa6-8cf7fbc1e200">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4e6dc2f6-14bc-402f-b143-2495e50ecda1">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_776dc8c1-2015-487e-bad2-44f9427bbaf4">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_58570af8-653e-4e48-ab66-b7ca06488301">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_d2608b69-0e37-4554-9555-9e322b2f76e9">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_94f2838f-12a3-4d1a-93fc-dcb4654c7bc5">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_6fab3866-1476-4e18-9536-d1c5e9a20d46">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_1e083e37-16f5-4233-b062-b2579eb1929c">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_3b8b60af-054f-420a-8eae-354f923fce6e">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_ea23a1d8-2010-4e43-9d2a-d3d6a7ae3f22">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_ba20324f-2692-4e08-bdc2-32d435d7715b">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_05223d16-2065-4bd0-8875-531500e81e2d">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_a14db164-0b4e-4fa2-8e8b-32da14d3587b">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_91f6147e-3a4b-413f-87a4-ee52df0e0b90">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_b396ddf5-276b-47ad-90fa-340865e3a3f3">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_21087615-bfb4-4f7a-9642-4b88450d04f1">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_033bf0d7-efce-4eac-aa61-73ca3334675c">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_fd39ed78-15cb-4853-b3a0-e5e273bdeae3">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_d49de18f-3d63-4126-8939-4da397d4b82e">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_c578480b-6c1a-4f1b-8b48-a357e83465e5">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_64266b1d-6b72-4890-9cf6-2a86a97b9035">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_ed7aac01-e36e-4df0-bf92-1faccea71114">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_731be840-dbe4-4f3a-80cb-82d86784ea0a">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_f1bb0586-5315-4862-9365-cce59e585031">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_52cfd12f-e2cb-4680-8c5a-ab632f28cfe6">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_209af650-74c3-4d78-a686-effedfe0b38c">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_21c810a6-6ad7-4e87-a7a7-58b7e7e3d048">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_5ebbc582-96f2-478f-bfdb-650757e806a6">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_761f3d3f-48b9-4431-8c5d-c157895feb41">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_5f77c42f-04e5-4656-8540-f827b564f2b1">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_e02c1fe3-f961-4f09-a406-1d84f500ff1f">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_80d911d0-20d0-4959-b6fe-cb9f2a93ed09">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_e558ca9f-1731-4307-9205-d2bd7413115b">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_6a5b163d-13ac-4e01-9160-d5e72c7034ed">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_1642bb1c-6e28-4038-975b-ca4b5a9aed33">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_ad419b57-92ac-45a1-aa4a-1b290cdbab1f">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_a52ff215-93c5-44b4-a895-6887c8bdc764">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_072de75e-96e4-45d3-8dfa-9471f9bb02b8">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_cef14443-fdd2-4054-b9b3-e5205b66edcb">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_5ef04b69-63a6-4929-92ed-125583ad9232">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_fd563cbc-0da3-4a21-a951-e69f802a7b71">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_28741caa-d54a-4e3b-91f8-8d1e4343f8ba">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_5900f534-ebc9-4ab7-9324-c90d9a4ac93c">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_9a47dca4-3807-4dcd-aef3-b03487233eef">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4c479441-0c03-431e-89d2-277c7f67bb9d">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4304b2b4-d2a8-41d0-b156-0d9c4e15b873">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_28f7d9ce-11f4-42f2-affc-a1da0910ab2b">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_e8f0cff7-4023-4733-8b04-38385e799632">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_0c1e6915-faa3-42a4-871a-5a2922c5773c">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_a60c708c-1110-47db-b410-3abde522bdb5">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_6660f44a-9f1d-483c-a7d0-e4d65443ed26">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_8ba5605d-b971-495d-b5b6-69582a6e5a9c">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4fb4dd2a-d881-4f09-8ff3-cba8c9ced240">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_4bd4d160-6070-40f8-96b4-77e16462458b">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_6fb0fa1b-63af-4d2e-a0a5-8a69730afc18">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_3c382b88-0473-406b-b54b-e3379d1d419a">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_176a7223-1e3d-4826-914e-ffd09c300d43">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_1919c2a4-a25c-4267-b173-e5d2e2b18832">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_6ccac58d-80f4-4039-a0a4-efbc50055b78">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_8ffde0c0-6cf6-4347-ac6b-c854e1c794bc">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_014ffe67-66e6-43c6-8640-883f1389430a">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_817b371a-2f1a-4093-8eb2-158d0c0097a4">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_791aab14-60c3-474f-ac03-2426cbb84a22">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_b0370687-4d1b-461f-9146-11d4ab2fe9ef">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_54fc9c4d-d436-4c12-8609-3ed6c9eee228">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_a585e7da-1053-4672-b3cf-ac763ff3978d">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_c92772cc-0877-4d3d-9e4c-efcf3b068776">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_0eeefb2e-d571-4807-b7e9-66add28c2472">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_1e9c2ec0-ed7d-4b81-b3c3-96028245e9cc">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_bee74771-f952-4e26-8d72-7592d1f85aa4">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_dea3ee4c-1e9f-4dde-911c-436884e432bd">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_d9b9fbd1-d207-42fd-bcb1-526bb63e46c6">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_94867730-81ca-4999-906e-fb011614ac90">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_9d459665-66e1-4b02-bbd2-efcb1180f098">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_a7f358de-0a79-4255-81a0-2d2d8f89131e">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_5d955337-ae9f-4a60-8e51-e9cca915dfcf">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+    <BPMNLabelStyle id="Style_d92811e6-8f36-41a2-8efc-598c00d26e08">
+      <Font xmlns="http://www.omg.org/spec/DD/20100524/DC" name="Segoe UI" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" />
+    </BPMNLabelStyle>
+  </BPMNDiagram>
+</definitions>

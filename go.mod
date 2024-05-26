@@ -1,4 +1,4 @@
-module github.com/timdadd/depgraph
+module depgraph
 
 go 1.22
 

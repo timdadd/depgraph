@@ -11,9 +11,10 @@ import (
 // TimDadd - modified to use any instead of string and new sort algorithm
 
 type node struct {
-	id any
-	x  float32
-	y  float32
+	id       any
+	x        float32
+	y        float32
+	addOrder int
 }
 
 // A node in this graph is just any, so a nodeMap is a map whose
@@ -64,17 +65,18 @@ func (g *Graph) Nodes() (nodes []any) {
 	return nodes
 }
 
-func (g *Graph) AddNode(id any, x, y float32) error {
+func (g *Graph) AddNode(id any, x, y float32) {
 	g.nodes[id] = &node{
-		id: id,
-		x:  x,
-		y:  y,
+		id:       id,
+		x:        x,
+		y:        y,
+		addOrder: len(g.nodes),
 	}
-	return nil
+	return
 }
 
-// AddLink name here for potential future use
-func (g *Graph) AddLink(name string, from, to any) error {
+// AddLink id here for potential future use
+func (g *Graph) AddLink(id string, from, to any) error {
 	return g.DependOn(to, from)
 }
 
@@ -89,18 +91,20 @@ func (g *Graph) DependOn(child, parent any) error {
 	//}
 
 	// Add nodes if not already added
-	if n := g.nodes[parent]; n != nil {
+	if n := g.nodes[parent]; n == nil {
 		g.nodes[parent] = &node{
-			id: parent,
-			x:  0,
-			y:  0,
+			id:       parent,
+			x:        0,
+			y:        0,
+			addOrder: len(g.nodes),
 		}
 	}
-	if n := g.nodes[child]; n != nil {
+	if n := g.nodes[child]; n == nil {
 		g.nodes[child] = &node{
-			id: child,
-			x:  0,
-			y:  0,
+			id:       child,
+			x:        0,
+			y:        0,
+			addOrder: len(g.nodes),
 		}
 	}
 
@@ -165,36 +169,11 @@ func (g *Graph) SortedLayers() (layers [][]any) {
 		for _, leafNode := range leaves {
 			shrinkingGraph.remove(leafNode)
 		}
-		//if leaves[0] == "Submit & Display Order" {
-		//	fmt.Println(leaves)
-		//}
 	}
 
 	return layers
 }
 
-// // SortedMap returns a map[node]sort starting at 1
-// // If they are on the same layer then they get the sort number
-// // See also `Graph.SortedLayers()`.
-//
-//	func (g *Graph) SortedMap() (sortedNodeMap map[any]int) {
-//		sortedNodeMap = make(map[any]int, len(g.nodes))
-//		level := 0
-//		// Copy the graph
-//		shrinkingGraph := g.clone()
-//		for {
-//			leaves := shrinkingGraph.Leaves()
-//			if len(leaves) == 0 {
-//				break
-//			}
-//			level++
-//			for _, leafNode := range leaves {
-//				sortedNodeMap[leafNode] = level
-//				shrinkingGraph.remove(leafNode)
-//			}
-//		}
-//		return
-//	}
 func removeFromDepMap(dm dependencyMap, key, nodeId any) {
 	nMap := dm[key]
 	if len(nMap) == 1 {
@@ -223,44 +202,6 @@ func (g *Graph) remove(nodeID any) {
 	// Finally, remove the node itself.
 	delete(g.nodes, nodeID)
 }
-
-//// Sorted returns all the nodes in the graph is topological sort order.
-//// See also `Graph.SortedLayers()`.
-//func (g *Graph) Sorted() (allNodes []any) {
-//	nodeCount := 0
-//	layers := g.SortedLayers()
-//	for _, layer := range layers {
-//		nodeCount += len(layer)
-//	}
-//
-//	allNodes = make([]any, 0, nodeCount)
-//	for _, layer := range layers {
-//		for _, node := range layer {
-//			allNodes = append(allNodes, node)
-//		}
-//	}
-//
-//	return allNodes
-//}
-//
-//// SortedNodes returns all the nodes in the graph is topological sort order.
-//// See also `Graph.SortedLayers()`.
-//func (g *Graph) SortedNodes() (nodes []any) {
-//	nodeCount := 0
-//	layers := g.SortedLayers()
-//	for _, layer := range layers {
-//		nodeCount += len(layer)
-//	}
-//
-//	nodes = make([]any, 0, nodeCount)
-//	for _, layer := range layers {
-//		for _, node := range layer {
-//			nodes = append(nodes, node)
-//		}
-//	}
-//
-//	return nodes
-//}
 
 func (g *Graph) dependencies(child any) nodeMap {
 	return g.buildTransitive(child, g.immediateDependencies)
@@ -338,51 +279,30 @@ func addNodeToNodeset(dm dependencyMap, key, nodeId any) {
 		y:  0,
 	}
 	if nodes, ok := dm[key]; !ok {
+		n.addOrder = 0
 		nodes = nodeMap{nodeId: n} // Initialise the map
 		dm[key] = nodes
 	} else {
+		n.addOrder = len(nodes)
 		nodes[nodeId] = n
 	}
 }
-
-//func (g *Graph) topologicalSortUtil(v any, visited map[any]bool, stack *[]any) {
-//	visited[v] = true
-//
-//	for _, u := range g.dependentMap[v] {
-//		if !visited[u] {
-//			g.topologicalSortUtil(u, visited, stack)
-//		}
-//	}
-//
-//	*stack = append([]any{v}, *stack...)
-//}
-//
-//func (g *Graph) TopologicalSort() []any {
-//	var stack []any
-//	visited := make(map[any]bool)
-//
-//	for v := range g.nodes {
-//		if !visited[v] {
-//			g.topologicalSortUtil(v, visited, &stack)
-//		}
-//	}
-//
-//	return stack
-//}
 
 func (g *Graph) SortedWithOrder() []*TopologyOrder {
 	// Copy the graph, so we can remove things we've visited
 	shrinkingGraph := g.clone()
 	shrinkingGraph.handled = make(map[any]*TopologyOrder, len(g.nodes))
-	shrinkingGraph.sortLeaves("", "", 1, 0, nil)
+	shrinkingGraph.sortLeaves("", "", 0, 0, nil)
 	sort.Slice(shrinkingGraph.orderedTopology, func(i, j int) bool {
 		return shrinkingGraph.orderedTopology[i].SortedStep < shrinkingGraph.orderedTopology[j].SortedStep
 	})
 	return shrinkingGraph.orderedTopology
 }
 
-// The graph is a shrinking graph
-func (g *Graph) sortLeaves(prefix, sortedPrefix string, step, level int, children nodeMap) {
+// The graph is a shrinking graph, that is, as we deal with something we remove from the graph
+// Stops any issues with recursion in the graph
+func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, children nodeMap) {
+	rootLeaf := prefix == "" && parent == 0 && level == 0
 	var leaves []any
 	if children == nil {
 		leaves = g.Leaves()
@@ -403,49 +323,73 @@ func (g *Graph) sortLeaves(prefix, sortedPrefix string, step, level int, childre
 			dependents[leafNode] = len(g.dependents(leafNode))
 		}
 		sort.Slice(leaves, func(i, j int) bool {
-			if dependents[leaves[i]] == dependents[leaves[j]] {
+			// Pick dependents over co-ordinates except when the root - then try and start top left
+			if dependents[leaves[i]] == dependents[leaves[j]] || rootLeaf {
 				nodeI := g.nodes[leaves[i]]
 				nodeJ := g.nodes[leaves[j]]
 				if nodeI.x != nodeJ.x {
 					return nodeI.x < nodeJ.x
+				} else if nodeI.y != nodeJ.y {
+					return nodeI.y < nodeJ.y
 				}
-				return nodeI.y < nodeJ.y
+				return nodeI.addOrder < nodeI.addOrder
 			}
-			return dependents[leaves[i]] > dependents[leaves[j]]
+			return dependents[leaves[i]] > dependents[leaves[j]] // One with the longest path
 		})
 	}
+	offset := parent + 1
+	parentPrefix := prefix
+	parentSortedPrefix := sortedPrefix
 	for i, leafNode := range leaves {
+		//stopAts := []string{"Event_1gnl54n", "Activity_0l71uiq"} //Activity_00qw565
+		//for _, stopAt := range stopAts {
+		//	if leafNode == stopAt {
+		//		fmt.Println(stopAt)
+		//		break
+		//	}
+		//}
 		// By the time we're here, the leaf may have already been processed in another branch
 		if _, ok := g.handled[leafNode]; ok {
 			continue
 		}
-		to := &TopologyOrder{
-			Node: leafNode,
-		}
 		// Update the prefix if we have more than one leaf
-		if i == 1 {
-			prefix = fmt.Sprintf("%s%d.", prefix, step-1)
-			sortedPrefix = fmt.Sprintf("%s%04d.", sortedPrefix, step-1)
-			step = 0
-			level++
+		// If i=0 then this is main route and the parent prefix is used
+		if i > 0 {
+			offset = 1 // Reset the offset
+			if i == 1 {
+				level++
+			}
+			if rootLeaf {
+				prefix = fmt.Sprintf("%c.", 64+i) // Use a letter for the top layer - different paths!
+				sortedPrefix = prefix
+			} else { // Prefix format depends on number of leaves
+				switch len(leaves) {
+				case 2: // If we only have two leaves then we simplify the second prefix (i.e. 1-1,1-2,1-3)
+					prefix = fmt.Sprintf("%s%d.", parentPrefix, parent)
+					sortedPrefix = fmt.Sprintf("%s%04d.", parentSortedPrefix, parent)
+				default: // More than 2 leaves then full-fat prefix (i.e. 1-1-1, 1-2-1, 1-3-1 etc.)
+					prefix = fmt.Sprintf("%s%d.%d.", parentPrefix, parent, i)
+					sortedPrefix = fmt.Sprintf("%s%04d.%04d.", parentSortedPrefix, parent, i)
+				}
+			}
 		}
-		to.SortedStep = fmt.Sprintf("%s%04d", sortedPrefix, step+i)
-		to.Step = fmt.Sprintf("%s%d", prefix, step+i)
-		to.Level = level
+		to := &TopologyOrder{
+			Node:       leafNode,
+			SortedStep: fmt.Sprintf("%s%04d", sortedPrefix, offset),
+			Step:       fmt.Sprintf("%s%d", prefix, offset),
+			Level:      level,
+		}
 		g.orderedTopology = append(g.orderedTopology, to)
 		g.handled[leafNode] = to
 		c := g.dependentMap[leafNode]
 		g.remove(leafNode)
-		//if to.Node == "Validate Order" {
-		//	fmt.Println("Next Step:", to.SortedStep)
-		//}
 		// If we're following a path then keep following until the end
-		if c == nil && children != nil {
+		// If this is a singleton root step then don't go down a level
+		if c == nil && children != nil || (rootLeaf && c == nil) {
 			continue
 		}
-		g.sortLeaves(prefix, sortedPrefix, step+i+1, level, c)
+		g.sortLeaves(prefix, sortedPrefix, offset, level, c)
 	}
-
 }
 
 // unhandledLeaves finds all nodes that don't have a dependency
