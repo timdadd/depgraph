@@ -51,71 +51,143 @@ func TestLeaves(t *testing.T) {
 	assert.ElementsMatch(t, leaves, []string{"feed", "soil"})
 }
 
-func TestTopologicalSort(t *testing.T) {
-	g := depgraph.New()
-	assert.NoError(t, g.DependOn("cake", "eggs"))
-	assert.NoError(t, g.DependOn("cake", "flour"))
-	assert.NoError(t, g.DependOn("eggs", "chickens"))
-	assert.NoError(t, g.DependOn("flour", "grain"))
-	assert.NoError(t, g.DependOn("chickens", "grain"))
-	assert.NoError(t, g.DependOn("grain", "soil"))
+type pair struct {
+	before any
+	after  any
+}
 
-	sorted := g.SortedWithOrder()
-	//for i, l := range sorted {
-	//	t.Logf("Sequence:%d,Node:%s", i, l.Node)
-	//}
-	//for i, l := range sorted {
-	//	t.Logf("Sequence:%d,Node:%s", i, l.Node)
-	//}
-	pairs := []struct {
-		before string
-		after  string
-	}{
-		{
-			before: "soil",
-			after:  "grain",
-		},
-		{
-			before: "grain",
-			after:  "chickens",
-		},
-		{
-			before: "grain",
-			after:  "flour",
-		},
-		{
-			before: "chickens",
-			after:  "eggs",
-		},
-		{
-			before: "flour",
-			after:  "cake",
-		},
-		{
-			before: "eggs",
-			after:  "cake",
-		},
+func testSortedWithPairs(t *testing.T, pairs []pair) {
+	g := depgraph.New()
+	var nodeUsage = make(map[any]int)
+	for _, p := range pairs {
+		assert.NoError(t, g.DependOn(p.after, p.before))
+		nodeUsage[p.before]++
+		nodeUsage[p.after]++
 	}
+	assert.Len(t, g.Nodes(), len(nodeUsage))
+	for _, p := range pairs {
+		assert.True(t, g.HasDependent(p.before, p.after))
+	}
+
+	sorted := g.Sorted()
+	//for i, l := range sorted {
+	//	t.Logf("Sequence:%d,Node:%s", i, l.Node)
+	//}
 	comesBefore := func(before, after interface{}) bool {
 		iBefore := -1
 		iAfter := -1
 		for i, elem := range sorted {
-			if elem.Node == before {
+			if elem == before {
 				iBefore = i
-			} else if elem.Node == after {
+			} else if elem == after {
 				iAfter = i
 			}
 		}
 		return iBefore < iAfter
 	}
-	for _, pair := range pairs {
-		assert.True(t, comesBefore(pair.before, pair.after))
+	for _, p := range pairs {
+		assert.True(t, comesBefore(p.before, p.after))
 	}
+}
+
+func TestSortedWithText(t *testing.T) {
+	pairs := []pair{
+		{before: "soil", after: "grain"},
+		{before: "grain", after: "chickens"},
+		{before: "grain", after: "flour"},
+		{before: "chickens", after: "eggs"},
+		{before: "flour", after: "cake"},
+		{before: "eggs", after: "cake"},
+	}
+	testSortedWithPairs(t, pairs)
+}
+
+func TestSortedWithInt(t *testing.T) {
+	pairs := []pair{
+		{before: 3, after: 22},
+		{before: 24, after: 27},
+		{before: 21, after: 22},
+		{before: 24, after: 22},
+		{before: 22, after: 23},
+		{before: 5, after: 7},
+		{before: 10, after: 11},
+		{before: 10, after: 12},
+		{before: 17, after: 19},
+		{before: 24, after: 14},
+		{before: 16, after: 19},
+		{before: 24, after: 16},
+		{before: 24, after: 3},
+		{before: 24, after: 15},
+		{before: 5, after: 9},
+		{before: 7, after: 9},
+		{before: 24, after: 9},
+		{before: 24, after: 20},
+		{before: 18, after: 19},
+		{before: 17, after: 18},
+		{before: 18, after: 21},
+		{before: 14, after: 21},
+		{before: 24, after: 29},
+		{before: 21, after: 26},
+		{before: 16, after: 21},
+		{before: 19, after: 21},
+		{before: 27, after: 21},
+		{before: 17, after: 21},
+		{before: 16, after: 26},
+		{before: 19, after: 26},
+		{before: 28, after: 26},
+		{before: 17, after: 26},
+		{before: 20, after: 21},
+		{before: 24, after: 21},
+		{before: 4, after: 9},
+		{before: 4, after: 8},
+		{before: 8, after: 9},
+		{before: 7, after: 8},
+		{before: 24, after: 8},
+		{before: 21, after: 23},
+		{before: 32, after: 31},
+		{before: 3, after: 32},
+		{before: 14, after: 33},
+		{before: 35, after: 25},
+		{before: 25, after: 26},
+		{before: 4, after: 25},
+		{before: 8, after: 25},
+		{before: 21, after: 25},
+		{before: 24, after: 25},
+		{before: 1, after: 31},
+		{before: 1, after: 26},
+		{before: 32, after: 1},
+		{before: 1, after: 25},
+		{before: 1, after: 33},
+		{before: 1, after: 21},
+		{before: 25, after: 37},
+		{before: 4, after: 6},
+		{before: 6, after: 8},
+		{before: 6, after: 9},
+		{before: 6, after: 7},
+		{before: 6, after: 25},
+		{before: 6, after: 37},
+		{before: 1, after: 6},
+		{before: 6, after: 38},
+		{before: 9, after: 38},
+		{before: 31, after: 34},
+		{before: 26, after: 34},
+		{before: 6, after: 34},
+		{before: 25, after: 34},
+		{before: 17, after: 34},
+		{before: 21, after: 34},
+		{before: 24, after: 34},
+		{before: 1, after: 34},
+	}
+	testSortedWithPairs(t, pairs)
+}
+
+type orderNode struct {
+	order string
+	node  string
 }
 
 func TestLayeredTopologicalSort(t *testing.T) {
 	g := depgraph.New()
-
 	assert.NoError(t, g.DependOn("web", "database"))
 	assert.NoError(t, g.DependOn("web", "aggregator"))
 	assert.NoError(t, g.DependOn("aggregator", "database"))
@@ -141,6 +213,57 @@ func TestLayeredTopologicalSort(t *testing.T) {
 	assert.ElementsMatch(t, []string{"database", "metrics"}, layers[1])
 	assert.ElementsMatch(t, []string{"aggregator"}, layers[2])
 	assert.ElementsMatch(t, []string{"web"}, layers[3])
+}
+
+// Already the items have been added to the graph
+func testTopologicalSort(t *testing.T, g *depgraph.Graph, expect []orderNode, useSortedStep bool) {
+	assert.Len(t, g.Nodes(), len(expect))
+	actual := g.TopologicalSort()
+	assert.Len(t, actual, len(expect))
+	check := make(map[any]bool, len(actual))
+	if len(actual) > len(expect) {
+		for _, x := range actual {
+			check[x] = false
+		}
+		for _, x := range expect {
+			check[x.node] = true
+		}
+		for k, v := range check {
+			if !v {
+				t.Logf("Where is %s", k)
+			}
+		}
+	} else if len(expect) > len(actual) {
+		for _, x := range expect {
+			check[x.node] = false
+		}
+		for _, y := range actual {
+			check[y.Node] = true
+		}
+		for k, v := range check {
+			if !v {
+				t.Logf("Where is %s", k)
+			}
+		}
+	}
+
+	////t.Log(sorted)
+	//for _ = range nodes {
+	//}
+	//for i, node := range nodes {
+	//	assert.Equal(t, sorted[i], node.node)
+	//}
+
+	for i, x := range expect {
+		//t.Logf("Expected:%s, Got:%s (%d-%s), Equal:%t", x.node, actual[i].Node, actual[i].Level, actual[i].Step, x.node == actual[i].Node)
+		assert.Equal(t, actual[i].Node, x.node)
+		if useSortedStep {
+			assert.Equal(t, actual[i].SortedStep, x.order)
+		} else {
+			assert.Equal(t, actual[i].Step, x.order)
+		}
+	}
+
 }
 
 func TestTopologicalSort001(t *testing.T) {
@@ -176,10 +299,7 @@ func TestTopologicalSort001(t *testing.T) {
 	assert.NoError(t, g.AddLink("", "Request Confirm & Release of eSIM", "Post eSIM Confirm & Release Request"))
 	assert.NoError(t, g.AddLink("", "Post eSIM Confirm & Release Request", "Mark eSIM as Confirmed & Released"))
 
-	expect := []struct {
-		order string
-		node  string
-	}{
+	expect := []orderNode{
 		{order: "1", node: "Order Submitted"},
 		{order: "2", node: "SIM Type?"},
 		{order: "3", node: "Prompt for email address"},
@@ -209,59 +329,18 @@ func TestTopologicalSort001(t *testing.T) {
 		{order: "15", node: "Mark eSIM as Installed"},
 		{order: "16", node: "eSIM Installed"},
 	}
-	assert.Len(t, g.Nodes(), len(expect))
-	actual := g.SortedWithOrder()
-	assert.Len(t, actual, len(expect))
-	check := make(map[any]bool, len(actual))
-	if len(actual) > len(expect) {
-		for _, x := range actual {
-			check[x] = false
-		}
-		for _, x := range expect {
-			check[x.node] = true
-		}
-		for k, v := range check {
-			if !v {
-				t.Logf("Where is %s", k)
-			}
-		}
-	} else if len(expect) > len(actual) {
-		for _, x := range expect {
-			check[x.node] = false
-		}
-		for _, y := range actual {
-			check[y.Node] = true
-		}
-		for k, v := range check {
-			if !v {
-				t.Logf("Where is %s", k)
-			}
-		}
-
-	}
-
-	for i, x := range expect {
-		//t.Logf("Expected:%s, Got:%s (%d-%s), Equal:%t", x.node, actual[i].Node, actual[i].Level, actual[i].Step, x.node == actual[i].Node)
-		assert.Equal(t, x.node, actual[i].Node)
-		assert.Equal(t, x.order, actual[i].Step)
-	}
-	////t.Log(sorted)
-	//for _ = range nodes {
-	//}
-	//for i, node := range nodes {
-	//	assert.Equal(t, sorted[i], node.node)
-	//}
+	testTopologicalSort(t, g, expect, false)
 }
 
-func TestStress(t *testing.T) {
-	for range 1000 {
-		TestTopologicalSort001(t)
-		TestTopologicalSort002(t)
-		TestTopologicalSort003(t)
-		TestTopologicalSort004(t)
-		TestTopologicalSort005(t)
-	}
-}
+//func TestStress(t *testing.T) {
+//	for range 1000 {
+//		TestTopologicalSort001(t)
+//		TestTopologicalSort002(t)
+//		TestTopologicalSort003(t)
+//		TestTopologicalSort004(t)
+//		TestTopologicalSort005(t)
+//	}
+//}
 
 func TestTopologicalSort002(t *testing.T) {
 	g := depgraph.New()
@@ -279,10 +358,7 @@ func TestTopologicalSort002(t *testing.T) {
 	assert.NoError(t, g.AddLink("", "Activity_03xsx2d", "Activity_0kpp56m")) // Check Blacklist --> Check Fraud
 	assert.NoError(t, g.AddLink("", "Activity_1dbuz2n", "Activity_0kpif64")) // Request Billing Validation --> Billing Validation
 	assert.NoError(t, g.AddLink("", "Activity_1jelc91", "Activity_1id12f4")) // Check Credit Score --> Feedback Risk Assessment Result
-	expect := []struct {
-		order string
-		node  string
-	}{
+	expect := []orderNode{
 		{order: "1", node: "Event_0jm34t5"},      //
 		{order: "2", node: "Activity_03xsx2d"},   // Check Blacklist
 		{order: "2.1", node: "Activity_1xyli2s"}, // Request Blacklist Validation
@@ -294,52 +370,12 @@ func TestTopologicalSort002(t *testing.T) {
 		{order: "4.1", node: "Activity_1dbuz2n"}, // Request Billing Validation
 		{order: "4.2", node: "Activity_0kpif64"}, // Billing Validation
 		{order: "5", node: "Activity_1jelc91"},   // Check Credit Score
-		{order: "5.1", node: "Activity_0z3bka9"}, // Request Credit Score
-		{order: "5.2", node: "Activity_0i96zzv"}, // Retrieve Credit Score
-		{order: "6", node: "Activity_1id12f4"},   // Feedback Risk Assessment Result
-		{order: "7", node: "Event_1gnl54n"},      //
+		{order: "5.1", node: "Activity_1id12f4"}, // Feedback Risk Assessment Result
+		{order: "5.2", node: "Event_1gnl54n"},    //
+		{order: "6", node: "Activity_0z3bka9"},   // Request Credit Score
+		{order: "7", node: "Activity_0i96zzv"},   // Retrieve Credit Score
 	}
-	assert.Len(t, g.Nodes(), len(expect))
-	actual := g.SortedWithOrder()
-	assert.Len(t, actual, len(expect))
-	check := make(map[any]bool, len(actual))
-	if len(actual) > len(expect) {
-		for _, x := range actual {
-			check[x] = false
-		}
-		for _, x := range expect {
-			check[x.node] = true
-		}
-		for k, v := range check {
-			if !v {
-				t.Logf("Where is %s", k)
-			}
-		}
-	} else if len(expect) > len(actual) {
-		for _, x := range expect {
-			check[x.node] = false
-		}
-		for _, y := range actual {
-			check[y.Node] = true
-		}
-		for k, v := range check {
-			if !v {
-				t.Logf("Where is %s", k)
-			}
-		}
-
-		for i, x := range expect {
-			//t.Logf("Expected:%s, Got:%s (%d-%s), Equal:%t", x.node, actual[i].Node, actual[i].Level, actual[i].Step, x.node == actual[i].Node)
-			assert.Equal(t, actual[i].Node, x.node)
-			assert.Equal(t, actual[i].Step, x.order)
-		}
-		////t.Log(sorted)
-		//for _ = range nodes {
-		//}
-		//for i, node := range nodes {
-		//	assert.Equal(t, sorted[i], node.node)
-		//}
-	}
+	testTopologicalSort(t, g, expect, false)
 }
 
 func TestTopologicalSort003(t *testing.T) {
@@ -360,71 +396,25 @@ func TestTopologicalSort003(t *testing.T) {
 	assert.NoError(t, g.AddLink("", "Activity_1ph2hdx", "Activity_1g4ob8p"))   // Contract Eligibility & Subscription CHN --> Resource Allocation AC
 	assert.NoError(t, g.AddLink("", "Gateway_0vcjsia", "Activity_1y77qve"))    // Customer Instruction --> Plan Eligibility & Subscription CHN
 	assert.NoError(t, g.AddLink("", "Activity_1fyetyd", "Activity_0001xto"))   // Fulfillment & Activation AC --> _Add eSIM to Device AC
-	{
-		expect := []struct {
-			order string
-			node  string
-		}{
-			{order: "1", node: "StartEvent_04ty3ep"}, // start
-			{order: "2", node: "Activity_1tverkt"},   // KYC Processing AC
-			{order: "3", node: "Activity_106dfdj"},   // Customer Info Capturing & Processing CHN
-			{order: "4", node: "Activity_1g6wphe"},   // Customer Risk Assessment CHN
-			{order: "5", node: "Activity_1oxtn1o"},   // Plan Subscription Pre-Validation CHN
-			{order: "6", node: "Activity_1y77qve"},   // Plan Eligibility & Subscription CHN
-			{order: "7", node: "Activity_039w2cd"},   // Addon Eligibility & Subscription CHN
-			{order: "8", node: "Activity_02ppuc4"},   // Device Eligibility & Subscription CHN
-			{order: "9", node: "Activity_1ph2hdx"},   // Contract Eligibility & Subscription CHN
-			{order: "10", node: "Activity_1g4ob8p"},  // Resource Allocation AC
-			{order: "11", node: "Gateway_0vcjsia"},   // Customer Instruction
-			{order: "12", node: "Activity_06y4ors"},  // Business Fee Calculation & Payment AC
-			{order: "13", node: "Activity_1fyetyd"},  // Fulfillment & Activation AC
-			{order: "14", node: "Activity_0001xto"},  // _Add eSIM to Device AC
-			{order: "15", node: "Activity_1c5tycp"},  // Notification
-			{order: "16", node: "Event_0r30wdr"},     // End
-		}
-		assert.Len(t, g.Nodes(), len(expect))
-		actual := g.SortedWithOrder()
-		assert.Len(t, actual, len(expect))
-		check := make(map[any]bool, len(actual))
-		if len(actual) > len(expect) {
-			for _, x := range actual {
-				check[x] = false
-			}
-			for _, x := range expect {
-				check[x.node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
-		} else if len(expect) > len(actual) {
-			for _, x := range expect {
-				check[x.node] = false
-			}
-			for _, y := range actual {
-				check[y.Node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
-
-		}
-
-		for i, x := range expect {
-			//t.Logf("Expected:%s, Got:%s (%d-%s), Equal:%t", x.node, actual[i].Node, actual[i].Level, actual[i].Step, x.node == actual[i].Node)
-			assert.Equal(t, actual[i].Node, x.node)
-			assert.Equal(t, actual[i].Step, x.order)
-		}
-		////t.Log(sorted)
-		//for _ = range nodes {
-		//}
-		//for i, node := range nodes {
-		//	assert.Equal(t, sorted[i], node.node)
-		//}
+	expect := []orderNode{
+		{order: "1", node: "StartEvent_04ty3ep"}, // start
+		{order: "2", node: "Activity_1tverkt"},   // KYC Processing AC
+		{order: "3", node: "Activity_106dfdj"},   // Customer Info Capturing & Processing CHN
+		{order: "4", node: "Activity_1g6wphe"},   // Customer Risk Assessment CHN
+		{order: "5", node: "Activity_1oxtn1o"},   // Plan Subscription Pre-Validation CHN
+		{order: "6", node: "Activity_1y77qve"},   // Plan Eligibility & Subscription CHN
+		{order: "7", node: "Activity_039w2cd"},   // Addon Eligibility & Subscription CHN
+		{order: "8", node: "Activity_02ppuc4"},   // Device Eligibility & Subscription CHN
+		{order: "9", node: "Activity_1ph2hdx"},   // Contract Eligibility & Subscription CHN
+		{order: "10", node: "Activity_1g4ob8p"},  // Resource Allocation AC
+		{order: "11", node: "Gateway_0vcjsia"},   // Customer Instruction
+		{order: "12", node: "Activity_06y4ors"},  // Business Fee Calculation & Payment AC
+		{order: "13", node: "Activity_1fyetyd"},  // Fulfillment & Activation AC
+		{order: "14", node: "Activity_0001xto"},  // _Add eSIM to Device AC
+		{order: "15", node: "Activity_1c5tycp"},  // Notification
+		{order: "16", node: "Event_0r30wdr"},     // End
 	}
+	testTopologicalSort(t, g, expect, false)
 }
 
 func TestTopologicalSort004(t *testing.T) {
@@ -445,71 +435,25 @@ func TestTopologicalSort004(t *testing.T) {
 	assert.NoError(t, g.AddLink("", "Activity_0001xto", "Activity_1c5tycp"))   // _Add eSIM to Device AC --> Notification
 	assert.NoError(t, g.AddLink("", "Activity_1c5tycp", "Event_0r30wdr"))      // Notification --> End
 	assert.NoError(t, g.AddLink("", "Activity_1ph2hdx", "Activity_1g4ob8p"))   // Contract Eligibility & Subscription CHN --> Resource Allocation AC
-	{
-		expect := []struct {
-			order string
-			node  string
-		}{
-			{order: "1", node: "StartEvent_04ty3ep"}, // start
-			{order: "2", node: "Activity_1tverkt"},   // KYC Processing AC
-			{order: "3", node: "Activity_106dfdj"},   // Customer Info Capturing & Processing CHN
-			{order: "4", node: "Activity_1g6wphe"},   // Customer Risk Assessment CHN
-			{order: "5", node: "Activity_1oxtn1o"},   // Plan Subscription Pre-Validation CHN
-			{order: "6", node: "Activity_1y77qve"},   // Plan Eligibility & Subscription CHN
-			{order: "7", node: "Activity_039w2cd"},   // Addon Eligibility & Subscription CHN
-			{order: "8", node: "Activity_02ppuc4"},   // Device Eligibility & Subscription CHN
-			{order: "9", node: "Activity_1ph2hdx"},   // Contract Eligibility & Subscription CHN
-			{order: "10", node: "Activity_1g4ob8p"},  // Resource Allocation AC
-			{order: "11", node: "Gateway_0vcjsia"},   // Customer Instruction
-			{order: "12", node: "Activity_06y4ors"},  // Business Fee Calculation & Payment AC
-			{order: "13", node: "Activity_1fyetyd"},  // Fulfillment & Activation AC
-			{order: "14", node: "Activity_0001xto"},  // _Add eSIM to Device AC
-			{order: "15", node: "Activity_1c5tycp"},  // Notification
-			{order: "16", node: "Event_0r30wdr"},     // End
-		}
-		assert.Len(t, g.Nodes(), len(expect))
-		actual := g.SortedWithOrder()
-		assert.Len(t, actual, len(expect))
-		check := make(map[any]bool, len(actual))
-		if len(actual) > len(expect) {
-			for _, x := range actual {
-				check[x] = false
-			}
-			for _, x := range expect {
-				check[x.node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
-		} else if len(expect) > len(actual) {
-			for _, x := range expect {
-				check[x.node] = false
-			}
-			for _, y := range actual {
-				check[y.Node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
-
-		}
-
-		for i, x := range expect {
-			//t.Logf("Expected:%s, Got:%s (%d-%s), Equal:%t", x.node, actual[i].Node, actual[i].Level, actual[i].Step, x.node == actual[i].Node)
-			assert.Equal(t, actual[i].Node, x.node)
-			assert.Equal(t, actual[i].Step, x.order)
-		}
-		////t.Log(sorted)
-		//for _ = range nodes {
-		//}
-		//for i, node := range nodes {
-		//	assert.Equal(t, sorted[i], node.node)
-		//}
+	expect := []orderNode{
+		{order: "1", node: "StartEvent_04ty3ep"}, // start
+		{order: "2", node: "Activity_1tverkt"},   // KYC Processing AC
+		{order: "3", node: "Activity_106dfdj"},   // Customer Info Capturing & Processing CHN
+		{order: "4", node: "Activity_1g6wphe"},   // Customer Risk Assessment CHN
+		{order: "5", node: "Activity_1oxtn1o"},   // Plan Subscription Pre-Validation CHN
+		{order: "6", node: "Activity_1y77qve"},   // Plan Eligibility & Subscription CHN
+		{order: "7", node: "Activity_039w2cd"},   // Addon Eligibility & Subscription CHN
+		{order: "8", node: "Activity_02ppuc4"},   // Device Eligibility & Subscription CHN
+		{order: "9", node: "Activity_1ph2hdx"},   // Contract Eligibility & Subscription CHN
+		{order: "10", node: "Activity_1g4ob8p"},  // Resource Allocation AC
+		{order: "11", node: "Gateway_0vcjsia"},   // Customer Instruction
+		{order: "12", node: "Activity_06y4ors"},  // Business Fee Calculation & Payment AC
+		{order: "13", node: "Activity_1fyetyd"},  // Fulfillment & Activation AC
+		{order: "14", node: "Activity_0001xto"},  // _Add eSIM to Device AC
+		{order: "15", node: "Activity_1c5tycp"},  // Notification
+		{order: "16", node: "Event_0r30wdr"},     // End
 	}
+	testTopologicalSort(t, g, expect, false)
 }
 
 func TestTopologicalSort005(t *testing.T) {
@@ -688,110 +632,65 @@ func TestTopologicalSort005(t *testing.T) {
 	g.AddNode("Gateway_0m3neg2", 5351.000000, 1142.000000)
 	g.AddNode("Event_0me7i5f", 6942.000000, 1149.000000)
 	assert.NoError(t, g.AddLink("", "Gateway_0m3neg2", "Event_0me7i5f")) // Port-in canceled -->
-	{
-		expect := []struct {
-			order string
-			node  string
-		}{
-			{order: "0001", node: "Event_156e4wi"},                                     //
-			{order: "0002", node: "Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74"},           // Post Order Submission
-			{order: "0003", node: "Id_9bcb3e93-3bf8-49eb-a1b1-e9cc8d9c8e1d"},           // Validate,Create,Enrich Order, Record Cust data
-			{order: "0004", node: "Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f"},           // Decompose, Orchestrate Order
-			{order: "0005", node: "Gateway_1icfqwu"},                                   // Order requires Logistics SIM Card delivery?
-			{order: "0006", node: "Activity_1r47mqk"},                                  // Request for Logistics SIM Card Delivery
-			{order: "0007", node: "Activity_0wsuoyg"},                                  // Post Logistics Order request to deliver SIM Card
-			{order: "0008", node: "Activity_0zvoww1"},                                  // Fulfill Logistics Order to deliver SIM Card
-			{order: "0009", node: "Activity_0wyrzg9"},                                  // Notify delivery Completion - pSIM delivered
-			{order: "0010", node: "Activity_15shrim"},                                  // Post delivery completion - pSIM delivered
-			{order: "0011", node: "Activity_0r87n5x"},                                  // Receives Logistics Call Back - pSIM delivered
-			{order: "0012", node: "Gateway_0r20x7i"},                                   // endif
-			{order: "0013", node: "Activity_0fu3e4x"},                                  // Send Port-in request to Regulator
-			{order: "0013.0001", node: "Activity_0z6vbvm"},                             // Process request to Port-in
-			{order: "0014", node: "Event_1ryfqic"},                                     // Waiting for Port-in response
-			{order: "0015", node: "Activity_0er1yq6"},                                  // Process feedback to Port-in request
-			{order: "0016", node: "Gateway_0u6v33s"},                                   // Port-in response?
-			{order: "0016.0001", node: "Gateway_15nz4h8"},                              // Next action?
-			{order: "0016.0001.0001", node: "Activity_0at6g8t"},                        // Order ResubmittedX
-			{order: "0016.0002", node: "Gateway_0m3neg2"},                              // Port-in canceled
-			{order: "0016.0003", node: "Event_0me7i5f"},                                //
-			{order: "0017", node: "Id_355a3ed4-2455-4ae7-b5e0-b486af3a9105"},           // OSS Service Fulfillment - Activation
-			{order: "0017.0001", node: "Id_8a402122-eeb2-46b1-a5f2-9f695d2e8a88"},      // Provision Network
-			{order: "0018", node: "Id_40e7d082-7ecb-4720-989c-ca65c390f2a6"},           // BSS Service Fulfillment & Activation
-			{order: "0018.0001", node: "Id_33b7ee99-afd9-40b7-bee3-a0637ee9f340"},      // Synchronize with Billing
-			{order: "0018.0002", node: "Id_05abb9f9-43e9-4a25-be75-0ca2dfd38502"},      // Billing Synchronization
-			{order: "0019", node: "Id_3f5cd1e3-761d-4613-90ae-792af851635d"},           // Update Inventory with Port-in MSISDN
-			{order: "0020", node: "Activity_1176p0t"},                                  // Sync Port-in RFS
-			{order: "0020.0001", node: "Activity_1hcsk28"},                             // Post Port-in RFS
-			{order: "0020.0002", node: "Activity_0n17894"},                             // Sync Port-in RFS with other Operators
-			{order: "0021", node: "Id_af69b80c-765a-4ae7-be40-22cb244b611b"},           // Order Completion Processing
-			{order: "0021.0001.0001", node: "Id_0efd2669-b950-4d2d-aa2e-edc02424d928"}, // Publish Kafka event
-			{order: "0021.0002.0001", node: "Event_0imzxiq"},                           //
-			{order: "0022", node: "Activity_07y35my"},                                  // Receive Callback for Inventory update and device delivery
-			{order: "0023", node: "Gateway_1iqkz3r"},                                   // SIM type?
-			{order: "0024", node: "Activity_0gc946n"},                                  // Post SIM card in use
-			{order: "0024.0001", node: "Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408"},      // Mark SIM card as used
-			{order: "0025", node: "Gateway_1uv7159"},                                   // endif
-			{order: "0026", node: "Gateway_19ib8qw"},                                   // Order includes Device?
-			{order: "0027", node: "Activity_1vtvz75"},                                  // Post request to deliver Device
-			{order: "0027.0001", node: "Activity_1swfmss"},                             // Fulfill Logistics Order to deliver Device
-			{order: "0028", node: "Gateway_0y26mfn"},                                   // endif
-			{order: "0029", node: "Event_1b30bns"},                                     //
-			{order: "A.0001", node: "Activity_0ctpaup"},                                // Submit Port-in cancelation request
-			{order: "A.0002", node: "Activity_0rbroim"},                                // Capture Port-in cancelation request
-			{order: "A.0003", node: "Activity_1qj1e0v"},                                // Post Port-in cancelation request
-			{order: "A.0004", node: "Activity_1cofeb7"},                                // Cancel Port-in Order
-			{order: "A.0005", node: "Activity_0fs7ehp"},                                // Post Port-in cancelation
-			{order: "A.0006", node: "Activity_14d0wi6"},                                // Process request to cancel Port-in
-			{order: "B.0001", node: "Activity_00qw565"},                                // Reply Port-in response
-			{order: "C.0001", node: "Activity_14y8a5o"},                                // Resubmit Port-in request
-			{order: "C.0002", node: "Activity_1qydfap"},                                // Capture Port-in resubmission request
-			{order: "C.0003", node: "Activity_1qrayp8"},                                // Validate Port-in Order (resubmission)
-			{order: "C.0003.0001", node: "Activity_1sgwv9e"},                           // Post Port-in resubmission request
-			{order: "C.0004", node: "Activity_0ku6ql7"},                                // Perform CRMS validations (resubmission)
-		}
-		assert.Len(t, g.Nodes(), len(expect))
-		actual := g.SortedWithOrder()
-		assert.Len(t, actual, len(expect))
-		check := make(map[any]bool, len(actual))
-		if len(actual) > len(expect) {
-			for _, x := range actual {
-				check[x] = false
-			}
-			for _, x := range expect {
-				check[x.node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
-		} else if len(expect) > len(actual) {
-			for _, x := range expect {
-				check[x.node] = false
-			}
-			for _, y := range actual {
-				check[y.Node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
 
-		}
-
-		for i, x := range expect {
-			//t.Logf("Expected:%s, Got:%s (%d-%s), Equal:%t", x.node, actual[i].Node, actual[i].Level, actual[i].Step, x.node == actual[i].Node)
-			assert.Equal(t, x.node, actual[i].Node)
-			assert.Equal(t, x.order, actual[i].SortedStep)
-		}
-		////t.Log(sorted)
-		//for _ = range nodes {
-		//}
-		//for i, node := range nodes {
-		//	assert.Equal(t, sorted[i], node.node)
-		//}
+	expect := []orderNode{
+		{order: "0001", node: "Event_156e4wi"},                                     //
+		{order: "0002", node: "Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74"},           // Post Order Submission
+		{order: "0003", node: "Id_9bcb3e93-3bf8-49eb-a1b1-e9cc8d9c8e1d"},           // Validate,Create,Enrich Order, Record Cust data
+		{order: "0004", node: "Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f"},           // Decompose, Orchestrate Order
+		{order: "0005", node: "Gateway_1icfqwu"},                                   // Order requires Logistics SIM Card delivery?
+		{order: "0006", node: "Activity_1r47mqk"},                                  // Request for Logistics SIM Card Delivery
+		{order: "0007", node: "Activity_0wsuoyg"},                                  // Post Logistics Order request to deliver SIM Card
+		{order: "0008", node: "Activity_0zvoww1"},                                  // Fulfill Logistics Order to deliver SIM Card
+		{order: "0009", node: "Activity_0wyrzg9"},                                  // Notify delivery Completion - pSIM delivered
+		{order: "0010", node: "Activity_15shrim"},                                  // Post delivery completion - pSIM delivered
+		{order: "0011", node: "Activity_0r87n5x"},                                  // Receives Logistics Call Back - pSIM delivered
+		{order: "0012", node: "Gateway_0r20x7i"},                                   // endif
+		{order: "0013", node: "Activity_0fu3e4x"},                                  // Send Port-in request to Regulator
+		{order: "0013.0001", node: "Activity_0z6vbvm"},                             // Process request to Port-in
+		{order: "0014", node: "Event_1ryfqic"},                                     // Waiting for Port-in response
+		{order: "0015", node: "Activity_0er1yq6"},                                  // Process feedback to Port-in request
+		{order: "0016", node: "Gateway_0u6v33s"},                                   // Port-in response?
+		{order: "0016.0001", node: "Gateway_15nz4h8"},                              // Next action?
+		{order: "0016.0001.0001", node: "Activity_0at6g8t"},                        // Order ResubmittedX
+		{order: "0016.0002", node: "Gateway_0m3neg2"},                              // Port-in canceled
+		{order: "0016.0003", node: "Event_0me7i5f"},                                //
+		{order: "0017", node: "Id_355a3ed4-2455-4ae7-b5e0-b486af3a9105"},           // OSS Service Fulfillment - Activation
+		{order: "0017.0001", node: "Id_8a402122-eeb2-46b1-a5f2-9f695d2e8a88"},      // Provision Network
+		{order: "0018", node: "Id_40e7d082-7ecb-4720-989c-ca65c390f2a6"},           // BSS Service Fulfillment & Activation
+		{order: "0018.0001", node: "Id_33b7ee99-afd9-40b7-bee3-a0637ee9f340"},      // Synchronize with Billing
+		{order: "0018.0002", node: "Id_05abb9f9-43e9-4a25-be75-0ca2dfd38502"},      // Billing Synchronization
+		{order: "0019", node: "Id_3f5cd1e3-761d-4613-90ae-792af851635d"},           // Update Inventory with Port-in MSISDN
+		{order: "0020", node: "Activity_1176p0t"},                                  // Sync Port-in RFS
+		{order: "0020.0001", node: "Activity_1hcsk28"},                             // Post Port-in RFS
+		{order: "0020.0002", node: "Activity_0n17894"},                             // Sync Port-in RFS with other Operators
+		{order: "0021", node: "Id_af69b80c-765a-4ae7-be40-22cb244b611b"},           // Order Completion Processing
+		{order: "0021.0001.0001", node: "Id_0efd2669-b950-4d2d-aa2e-edc02424d928"}, // Publish Kafka event
+		{order: "0021.0002.0001", node: "Event_0imzxiq"},                           //
+		{order: "0022", node: "Activity_07y35my"},                                  // Receive Callback for Inventory update and device delivery
+		{order: "0023", node: "Gateway_1iqkz3r"},                                   // SIM type?
+		{order: "0024", node: "Activity_0gc946n"},                                  // Post SIM card in use
+		{order: "0024.0001", node: "Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408"},      // Mark SIM card as used
+		{order: "0025", node: "Gateway_1uv7159"},                                   // endif
+		{order: "0026", node: "Gateway_19ib8qw"},                                   // Order includes Device?
+		{order: "0027", node: "Activity_1vtvz75"},                                  // Post request to deliver Device
+		{order: "0027.0001", node: "Activity_1swfmss"},                             // Fulfill Logistics Order to deliver Device
+		{order: "0028", node: "Gateway_0y26mfn"},                                   // endif
+		{order: "0029", node: "Event_1b30bns"},                                     //
+		{order: "A.0001", node: "Activity_0ctpaup"},                                // Submit Port-in cancelation request
+		{order: "A.0002", node: "Activity_0rbroim"},                                // Capture Port-in cancelation request
+		{order: "A.0003", node: "Activity_1qj1e0v"},                                // Post Port-in cancelation request
+		{order: "A.0004", node: "Activity_1cofeb7"},                                // Cancel Port-in Order
+		{order: "A.0005", node: "Activity_0fs7ehp"},                                // Post Port-in cancelation
+		{order: "A.0006", node: "Activity_14d0wi6"},                                // Process request to cancel Port-in
+		{order: "B.0001", node: "Activity_00qw565"},                                // Reply Port-in response
+		{order: "C.0001", node: "Activity_14y8a5o"},                                // Resubmit Port-in request
+		{order: "C.0002", node: "Activity_1qydfap"},                                // Capture Port-in resubmission request
+		{order: "C.0003", node: "Activity_1qrayp8"},                                // Validate Port-in Order (resubmission)
+		{order: "C.0003.0001", node: "Activity_1sgwv9e"},                           // Post Port-in resubmission request
+		{order: "C.0004", node: "Activity_0ku6ql7"},                                // Perform CRMS validations (resubmission)
 	}
+	testTopologicalSort(t, g, expect, true)
 }
 
 func TestTopologicalSort006(t *testing.T) {
@@ -835,61 +734,20 @@ func TestTopologicalSort006(t *testing.T) {
 	g.AddNode("Activity_139t6xx", 950.000000, -298.000000)
 	g.AddNode("Event_1o2dsrx", 1092.000000, -276.000000)
 	assert.NoError(t, g.AddLink("", "Activity_139t6xx", "Event_1o2dsrx")) // Account Data Viewed -->
-	{
-		expect := []struct {
-			order string
-			node  string
-		}{
-			{order: "0001", node: "Event_1fy56rv"},              //
-			{order: "0002", node: "Activity_1e7q5j6"},           // Account View
-			{order: "0003", node: "Gateway_0tnoiya"},            // Accordion View
-			{order: "0003.0001.0001", node: "Activity_1c6h4mm"}, // Snapshot Account Views
-			{order: "0003.0001.0002", node: "Activity_0h922nq"}, // Refresh
-			{order: "0003.0002.0001", node: "Activity_0furyas"}, // Transaction Account Views
-			{order: "0003.0002.0002", node: "Activity_08e5gsv"}, // Refresh
-			{order: "0004", node: "Gateway_0utu2zc"},            // Any Issues?
-			{order: "0005", node: "Activity_1y5gsi9"},           // Raise Service Request
-			{order: "0006", node: "Activity_139t6xx"},           // Account Data Viewed
-			{order: "0007", node: "Event_1o2dsrx"},              //
-		}
-		assert.Len(t, g.Nodes(), len(expect))
-		actual := g.SortedWithOrder()
-		assert.Len(t, actual, len(expect))
-		check := make(map[any]bool, len(actual))
-		if len(actual) > len(expect) {
-			for _, x := range actual {
-				check[x] = false
-			}
-			for _, x := range expect {
-				check[x.node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
-		} else if len(expect) > len(actual) {
-			for _, x := range expect {
-				check[x.node] = false
-			}
-			for _, y := range actual {
-				check[y.Node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
-
-		}
-
-		for i, x := range expect {
-			//t.Logf("Expected:%s, Got:%s (%d-%s), Equal:%t", x.node, actual[i].Node, actual[i].Level, actual[i].Step, x.node == actual[i].Node)
-			assert.Equal(t, x.node, actual[i].Node)
-			assert.Equal(t, x.order, actual[i].SortedStep)
-		}
+	expect := []orderNode{
+		{order: "0001", node: "Event_1fy56rv"},              //
+		{order: "0002", node: "Activity_1e7q5j6"},           // Account View
+		{order: "0003", node: "Gateway_0tnoiya"},            // Accordion View
+		{order: "0003.0001.0001", node: "Activity_1c6h4mm"}, // Snapshot Account Views
+		{order: "0003.0001.0002", node: "Activity_0h922nq"}, // Refresh
+		{order: "0003.0002.0001", node: "Activity_0furyas"}, // Transaction Account Views
+		{order: "0003.0002.0002", node: "Activity_08e5gsv"}, // Refresh
+		{order: "0004", node: "Gateway_0utu2zc"},            // Any Issues?
+		{order: "0005", node: "Activity_1y5gsi9"},           // Raise Service Request
+		{order: "0006", node: "Activity_139t6xx"},           // Account Data Viewed
+		{order: "0007", node: "Event_1o2dsrx"},              //
 	}
-
+	testTopologicalSort(t, g, expect, true)
 }
 
 func TestTopologicalSort007(t *testing.T) {
@@ -960,69 +818,29 @@ func TestTopologicalSort007(t *testing.T) {
 	g.AddNode("Activity_0pb6zdt", 140.000000, 790.000000)
 	g.AddNode("Activity_0l71uiq", 140.000000, 910.000000)
 	assert.NoError(t, g.AddLink("", "Activity_0pb6zdt", "Activity_0l71uiq")) // Perform Blacklist Validation --> Request internal Blacklist Validation
-	{
-		expect := []struct {
-			order string
-			node  string
-		}{
-			{order: "0001", node: "Event_0jm34t5"},              //
-			{order: "0002", node: "Activity_0kpp56m"},           // Synchronous Blacklist Validation
-			{order: "0002.0001", node: "Activity_0pb6zdt"},      // Perform Blacklist Validation
-			{order: "0002.0002", node: "Activity_0l71uiq"},      // Request internal Blacklist Validation
-			{order: "0002.0002.0001", node: "Activity_0bydgx6"}, // Internal Blacklist Validation
-			{order: "0002.0003", node: "Activity_1xyli2s"},      // Request external Blacklist Validation
-			{order: "0002.0004", node: "Activity_1gn4p38"},      // External Blacklist Validation
-			{order: "0003", node: "Gateway_1on7znk"},            // Pass Blacklist?
-			{order: "0004", node: "Activity_0scu270"},           // Returns Blacklist Checking Result
-			{order: "0005", node: "Activity_0x5lv85"},           // Informs Customer about Blacklist check result
-			{order: "0006", node: "Activity_19pmjpu"},           // Authorized Agent scans the Release Letter
-			{order: "0007", node: "Activity_1la4k4y"},           // Capture Release Letter
-			{order: "0007.0001", node: "Activity_0i2xgyh"},      // Request to Store Release Letter
-			{order: "0007.0002", node: "Activity_0cr870w"},      // Store Release Letter
-			{order: "0008", node: "Gateway_1174vjb"},            // endif
-			{order: "0009", node: "Activity_0o84rnf"},           // Check Billing
-			{order: "0009.0001", node: "Activity_1dbuz2n"},      // Request Billing Validation
-			{order: "0009.0002", node: "Activity_0kpif64"},      // Billing Validation
-			{order: "0010", node: "Gateway_0ko9dvk"},            // Pass Billing Check?
-			{order: "0010.0001", node: "Event_1gnl54n"},         //
-			{order: "0011", node: "Activity_1e9uv0g"},           // Returns Billing Check Result
-			{order: "0012", node: "Activity_173n75w"},           // Request for Payment regularization
-		}
-		assert.Len(t, g.Nodes(), len(expect))
-		actual := g.SortedWithOrder()
-		assert.Len(t, actual, len(expect))
-		check := make(map[any]bool, len(actual))
-		if len(actual) > len(expect) {
-			for _, x := range actual {
-				check[x] = false
-			}
-			for _, x := range expect {
-				check[x.node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
-		} else if len(expect) > len(actual) {
-			for _, x := range expect {
-				check[x.node] = false
-			}
-			for _, y := range actual {
-				check[y.Node] = true
-			}
-			for k, v := range check {
-				if !v {
-					t.Logf("Where is %s", k)
-				}
-			}
-
-		}
-
-		for i, x := range expect {
-			//t.Logf("Expected:%s, Got:%s (%d-%s), Equal:%t", x.node, actual[i].Node, actual[i].Level, actual[i].Step, x.node == actual[i].Node)
-			assert.Equal(t, x.node, actual[i].Node)
-			assert.Equal(t, x.order, actual[i].SortedStep)
-		}
+	expect := []orderNode{
+		{order: "0001", node: "Event_0jm34t5"},              //
+		{order: "0002", node: "Activity_0kpp56m"},           // Synchronous Blacklist Validation
+		{order: "0002.0001", node: "Activity_0pb6zdt"},      // Perform Blacklist Validation
+		{order: "0002.0002", node: "Activity_0l71uiq"},      // Request internal Blacklist Validation
+		{order: "0002.0002.0001", node: "Activity_0bydgx6"}, // Internal Blacklist Validation
+		{order: "0002.0003", node: "Activity_1xyli2s"},      // Request external Blacklist Validation
+		{order: "0002.0004", node: "Activity_1gn4p38"},      // External Blacklist Validation
+		{order: "0003", node: "Gateway_1on7znk"},            // Pass Blacklist?
+		{order: "0004", node: "Activity_0scu270"},           // Returns Blacklist Checking Result
+		{order: "0005", node: "Activity_0x5lv85"},           // Informs Customer about Blacklist check result
+		{order: "0006", node: "Activity_19pmjpu"},           // Authorized Agent scans the Release Letter
+		{order: "0007", node: "Activity_1la4k4y"},           // Capture Release Letter
+		{order: "0007.0001", node: "Activity_0i2xgyh"},      // Request to Store Release Letter
+		{order: "0007.0002", node: "Activity_0cr870w"},      // Store Release Letter
+		{order: "0008", node: "Gateway_1174vjb"},            // endif
+		{order: "0009", node: "Activity_0o84rnf"},           // Check Billing
+		{order: "0009.0001", node: "Activity_1dbuz2n"},      // Request Billing Validation
+		{order: "0009.0002", node: "Activity_0kpif64"},      // Billing Validation
+		{order: "0010", node: "Gateway_0ko9dvk"},            // Pass Billing Check?
+		{order: "0010.0001", node: "Event_1gnl54n"},         //
+		{order: "0011", node: "Activity_1e9uv0g"},           // Returns Billing Check Result
+		{order: "0012", node: "Activity_173n75w"},           // Request for Payment regularization
 	}
+	testTopologicalSort(t, g, expect, true)
 }

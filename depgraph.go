@@ -288,7 +288,27 @@ func addNodeToNodeset(dm dependencyMap, key, nodeId any) {
 	}
 }
 
-func (g *Graph) SortedWithOrder() []*TopologyOrder {
+// Sorted returns all the nodes in the graph sorted by layers
+func (g *Graph) Sorted() []any {
+	nodeCount := 0
+	layers := g.SortedLayers()
+	for _, layer := range layers {
+		nodeCount += len(layer)
+	}
+
+	allNodes := make([]any, 0, nodeCount)
+	for _, layer := range layers {
+		for _, n := range layer {
+			allNodes = append(allNodes, n)
+		}
+	}
+
+	return allNodes
+}
+
+// TopologicalSort tries to prioritise the longest branch and is good for sequence diagrams
+// Any off shoots are handled before carrying on
+func (g *Graph) TopologicalSort() []*TopologyOrder {
 	// Copy the graph, so we can remove things we've visited
 	shrinkingGraph := g.clone()
 	shrinkingGraph.handled = make(map[any]*TopologyOrder, len(g.nodes))
@@ -305,7 +325,7 @@ func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, child
 	rootLeaf := prefix == "" && parent == 0 && level == 0
 	var leaves []any
 	if children == nil {
-		leaves = g.Leaves()
+		leaves = g.Leaves() // Find all nodes that don't have a dependency
 	} else {
 		for child := range children {
 			if _, handled := g.handled[child]; !handled {
