@@ -182,8 +182,9 @@ func TestSortedWithInt(t *testing.T) {
 }
 
 type orderNode struct {
-	order string
-	node  string
+	order      string
+	node       string
+	fromLinkID string
 }
 
 func TestLayeredTopologicalSort(t *testing.T) {
@@ -216,7 +217,7 @@ func TestLayeredTopologicalSort(t *testing.T) {
 }
 
 // Already the items have been added to the graph
-func testTopologicalSort(t *testing.T, g *depgraph.Graph, expect []orderNode, useSortedStep bool) {
+func testTopologicalSort(t *testing.T, g *depgraph.Graph, expect []orderNode, useSortedStep, checkLinks bool) {
 	assert.Len(t, g.Nodes(), len(expect))
 	actual := g.TopologicalSort()
 	assert.Len(t, actual, len(expect))
@@ -256,11 +257,14 @@ func testTopologicalSort(t *testing.T, g *depgraph.Graph, expect []orderNode, us
 
 	for i, x := range expect {
 		//t.Logf("Expected:%s, Got:%s (%d-%s), Equal:%t", x.node, actual[i].Node, actual[i].Level, actual[i].Step, x.node == actual[i].Node)
-		assert.Equal(t, actual[i].Node, x.node)
+		assert.Equal(t, x.node, actual[i].Node)
 		if useSortedStep {
-			assert.Equal(t, actual[i].SortedStep, x.order)
+			assert.Equal(t, x.order, actual[i].SortedStep)
 		} else {
-			assert.Equal(t, actual[i].Step, x.order)
+			assert.Equal(t, x.order, actual[i].Step)
+		}
+		if checkLinks {
+			assert.Equal(t, x.fromLinkID, actual[i].FromLinkID)
 		}
 	}
 
@@ -268,68 +272,68 @@ func testTopologicalSort(t *testing.T, g *depgraph.Graph, expect []orderNode, us
 
 func TestTopologicalSort001(t *testing.T) {
 	g := depgraph.New()
-	assert.NoError(t, g.AddLink("", "Order Submitted", "SIM Type?"))
-	assert.NoError(t, g.AddLink("eSIM", "SIM Type?", "Prompt for email address"))
-	assert.NoError(t, g.AddLink("", "Prompt for email address", "Enter email address"))
-	assert.NoError(t, g.AddLink("", "Enter email address", "Capture email address"))
-	assert.NoError(t, g.AddLink("SIM", "SIM Type?", "SIM Type Known"))
-	assert.NoError(t, g.AddLink("", "Capture email address", "SIM Type Known"))
-	assert.NoError(t, g.AddLink("", "SIM Type Known", "Submit & Display Order"))
-	assert.NoError(t, g.AddLink("", "Submit & Display Order", "Review Order Confirmation"))
-	assert.NoError(t, g.AddLink("", "Submit & Display Order", "In Parallel"))
-	assert.NoError(t, g.AddLink("", "In Parallel", "Require Logistics Order?"))
-	assert.NoError(t, g.AddLink("", "In Parallel", "Is eSIM?"))
-	assert.NoError(t, g.AddLink("Yes", "Require Logistics Order?", "Fulfil Logistics Order"))
-	assert.NoError(t, g.AddLink("No", "Require Logistics Order?", "Logistics Handled"))
-	assert.NoError(t, g.AddLink("", "Fulfil Logistics Order", "Logistics Handled"))
-	assert.NoError(t, g.AddLink("", "Logistics Handled", "Submit CRM Order"))
-	assert.NoError(t, g.AddLink("", "Submit CRM Order", "Validate Order"))
-	assert.NoError(t, g.AddLink("", "Validate Order", "Perform CRMS Validations"))
-	assert.NoError(t, g.AddLink("", "Perform CRMS Validations", "Order Fulfilment"))
-	assert.NoError(t, g.AddLink("eSIM", "Is eSIM?", "Request Confirm & Release of eSIM"))
-	assert.NoError(t, g.AddLink("pSIM", "Is eSIM?", "xSIM Handled"))
-	assert.NoError(t, g.AddLink("", "Request Confirm & Release of eSIM", "Generate & Display eSIM QR Code"))
-	assert.NoError(t, g.AddLink("", "Generate & Display eSIM QR Code", "Show & Download eSIM Profile"))
-	assert.NoError(t, g.AddLink("", "Generate & Display eSIM QR Code", "Send eMail"))
-	assert.NoError(t, g.AddLink("", "Send eMail", "xSIM Handled"))
-	assert.NoError(t, g.AddLink("", "Send eMail", "Wait for Download"))
-	assert.NoError(t, g.AddLink("", "Wait for Download", "Mark eSIM as Downloaded"))
-	assert.NoError(t, g.AddLink("", "Mark eSIM as Downloaded", "Mark eSIM as Installed"))
-	assert.NoError(t, g.AddLink("", "Mark eSIM as Installed", "eSIM Installed"))
-	assert.NoError(t, g.AddLink("", "Request Confirm & Release of eSIM", "Post eSIM Confirm & Release Request"))
-	assert.NoError(t, g.AddLink("", "Post eSIM Confirm & Release Request", "Mark eSIM as Confirmed & Released"))
+	assert.NoError(t, g.AddLink("1", "Order Submitted", "SIM Type?"))
+	assert.NoError(t, g.AddLink("2", "SIM Type?", "Prompt for email address"))
+	assert.NoError(t, g.AddLink("3", "Prompt for email address", "Enter email address"))
+	assert.NoError(t, g.AddLink("4", "Enter email address", "Capture email address"))
+	assert.NoError(t, g.AddLink("5", "SIM Type?", "SIM Type Known"))
+	assert.NoError(t, g.AddLink("6", "Capture email address", "SIM Type Known"))
+	assert.NoError(t, g.AddLink("7", "SIM Type Known", "Submit & Display Order"))
+	assert.NoError(t, g.AddLink("8", "Submit & Display Order", "Review Order Confirmation"))
+	assert.NoError(t, g.AddLink("9", "Submit & Display Order", "In Parallel"))
+	assert.NoError(t, g.AddLink("10", "In Parallel", "Require Logistics Order?"))
+	assert.NoError(t, g.AddLink("11", "In Parallel", "Is eSIM?"))
+	assert.NoError(t, g.AddLink("12", "Require Logistics Order?", "Fulfil Logistics Order"))
+	assert.NoError(t, g.AddLink("13", "Require Logistics Order?", "Logistics Handled"))
+	assert.NoError(t, g.AddLink("14", "Fulfil Logistics Order", "Logistics Handled"))
+	assert.NoError(t, g.AddLink("15", "Logistics Handled", "Submit CRM Order"))
+	assert.NoError(t, g.AddLink("16", "Submit CRM Order", "Validate Order"))
+	assert.NoError(t, g.AddLink("17", "Validate Order", "Perform CRMS Validations"))
+	assert.NoError(t, g.AddLink("18", "Perform CRMS Validations", "Order Fulfilment"))
+	assert.NoError(t, g.AddLink("19", "Is eSIM?", "Request Confirm & Release of eSIM"))
+	assert.NoError(t, g.AddLink("20", "Is eSIM?", "xSIM Handled"))
+	assert.NoError(t, g.AddLink("21", "Request Confirm & Release of eSIM", "Generate & Display eSIM QR Code"))
+	assert.NoError(t, g.AddLink("22", "Generate & Display eSIM QR Code", "Show & Download eSIM Profile"))
+	assert.NoError(t, g.AddLink("23", "Generate & Display eSIM QR Code", "Send eMail"))
+	assert.NoError(t, g.AddLink("24", "Send eMail", "xSIM Handled"))
+	assert.NoError(t, g.AddLink("25", "Send eMail", "Wait for Download"))
+	assert.NoError(t, g.AddLink("26", "Wait for Download", "Mark eSIM as Downloaded"))
+	assert.NoError(t, g.AddLink("27", "Mark eSIM as Downloaded", "Mark eSIM as Installed"))
+	assert.NoError(t, g.AddLink("28", "Mark eSIM as Installed", "eSIM Installed"))
+	assert.NoError(t, g.AddLink("29", "Request Confirm & Release of eSIM", "Post eSIM Confirm & Release Request"))
+	assert.NoError(t, g.AddLink("30", "Post eSIM Confirm & Release Request", "Mark eSIM as Confirmed & Released"))
 
 	expect := []orderNode{
-		{order: "1", node: "Order Submitted"},
-		{order: "2", node: "SIM Type?"},
-		{order: "3", node: "Prompt for email address"},
-		{order: "4", node: "Enter email address"},
-		{order: "5", node: "Capture email address"},
-		{order: "6", node: "SIM Type Known"},
-		{order: "7", node: "Submit & Display Order"},
-		{order: "7.1", node: "Review Order Confirmation"},
-		{order: "8", node: "In Parallel"},
-		{order: "8.1", node: "Require Logistics Order?"},
-		{order: "8.2", node: "Fulfil Logistics Order"},
-		{order: "8.3", node: "Logistics Handled"},
-		{order: "8.4", node: "Submit CRM Order"},
-		{order: "8.5", node: "Validate Order"},
-		{order: "8.6", node: "Perform CRMS Validations"},
-		{order: "8.7", node: "Order Fulfilment"},
-		{order: "9", node: "Is eSIM?"},
-		{order: "10", node: "Request Confirm & Release of eSIM"},
-		{order: "10.1", node: "Post eSIM Confirm & Release Request"},
-		{order: "10.2", node: "Mark eSIM as Confirmed & Released"},
-		{order: "11", node: "Generate & Display eSIM QR Code"},
-		{order: "11.1", node: "Show & Download eSIM Profile"},
-		{order: "12", node: "Send eMail"},
-		{order: "12.1", node: "xSIM Handled"},
-		{order: "13", node: "Wait for Download"},
-		{order: "14", node: "Mark eSIM as Downloaded"},
-		{order: "15", node: "Mark eSIM as Installed"},
-		{order: "16", node: "eSIM Installed"},
+		{order: "1", node: "Order Submitted", fromLinkID: ""},
+		{order: "2", node: "SIM Type?", fromLinkID: "1"},
+		{order: "3", node: "Prompt for email address", fromLinkID: "2"},
+		{order: "4", node: "Enter email address", fromLinkID: "3"},
+		{order: "5", node: "Capture email address", fromLinkID: "4"},
+		{order: "6", node: "SIM Type Known", fromLinkID: "6"},
+		{order: "7", node: "Submit & Display Order", fromLinkID: "7"},
+		{order: "7.1", node: "Review Order Confirmation", fromLinkID: "8"},
+		{order: "8", node: "In Parallel", fromLinkID: "9"},
+		{order: "8.1", node: "Require Logistics Order?", fromLinkID: "10"},
+		{order: "8.2", node: "Fulfil Logistics Order", fromLinkID: "12"},
+		{order: "8.3", node: "Logistics Handled", fromLinkID: "14"},
+		{order: "8.4", node: "Submit CRM Order", fromLinkID: "15"},
+		{order: "8.5", node: "Validate Order", fromLinkID: "16"},
+		{order: "8.6", node: "Perform CRMS Validations", fromLinkID: "17"},
+		{order: "8.7", node: "Order Fulfilment", fromLinkID: "18"},
+		{order: "9", node: "Is eSIM?", fromLinkID: "11"},
+		{order: "10", node: "Request Confirm & Release of eSIM", fromLinkID: "19"},
+		{order: "10.1", node: "Post eSIM Confirm & Release Request", fromLinkID: "29"},
+		{order: "10.2", node: "Mark eSIM as Confirmed & Released", fromLinkID: "30"},
+		{order: "11", node: "Generate & Display eSIM QR Code", fromLinkID: "21"},
+		{order: "11.1", node: "Show & Download eSIM Profile", fromLinkID: "22"},
+		{order: "12", node: "Send eMail", fromLinkID: "23"},
+		{order: "12.1", node: "xSIM Handled", fromLinkID: "24"},
+		{order: "13", node: "Wait for Download", fromLinkID: "25"},
+		{order: "14", node: "Mark eSIM as Downloaded", fromLinkID: "26"},
+		{order: "15", node: "Mark eSIM as Installed", fromLinkID: "27"},
+		{order: "16", node: "eSIM Installed", fromLinkID: "28"},
 	}
-	testTopologicalSort(t, g, expect, false)
+	testTopologicalSort(t, g, expect, false, true)
 }
 
 //func TestStress(t *testing.T) {
@@ -344,38 +348,38 @@ func TestTopologicalSort001(t *testing.T) {
 
 func TestTopologicalSort002(t *testing.T) {
 	g := depgraph.New()
-	assert.NoError(t, g.AddLink("", "Activity_0o84rnf", "Activity_1jelc91")) // Check Billing --> Check Credit Score
-	assert.NoError(t, g.AddLink("", "Activity_0z3bka9", "Activity_0i96zzv")) // Request Credit Score --> Retrieve Credit Score
-	assert.NoError(t, g.AddLink("", "Activity_0l71uiq", "Activity_0bydgx6")) // Request Fraud Validation --> Internal Fraud Validation
-	assert.NoError(t, g.AddLink("", "Activity_0kpp56m", "Activity_0o84rnf")) // Check Fraud --> Check Billing
-	assert.NoError(t, g.AddLink("", "Activity_1jelc91", "Activity_0z3bka9")) // Check Credit Score --> Request Credit Score
-	assert.NoError(t, g.AddLink("", "Activity_03xsx2d", "Activity_1xyli2s")) // Check Blacklist --> Request Blacklist Validation
-	assert.NoError(t, g.AddLink("", "Event_0jm34t5", "Activity_03xsx2d"))    //  --> Check Blacklist
-	assert.NoError(t, g.AddLink("", "Activity_1id12f4", "Event_1gnl54n"))    // Feedback Risk Assessment Result -->
-	assert.NoError(t, g.AddLink("", "Activity_0kpp56m", "Activity_0l71uiq")) // Check Fraud --> Request Fraud Validation
-	assert.NoError(t, g.AddLink("", "Activity_0o84rnf", "Activity_1dbuz2n")) // Check Billing --> Request Billing Validation
-	assert.NoError(t, g.AddLink("", "Activity_1xyli2s", "Activity_1gn4p38")) // Request Blacklist Validation --> External Blacklist Validation
-	assert.NoError(t, g.AddLink("", "Activity_03xsx2d", "Activity_0kpp56m")) // Check Blacklist --> Check Fraud
-	assert.NoError(t, g.AddLink("", "Activity_1dbuz2n", "Activity_0kpif64")) // Request Billing Validation --> Billing Validation
-	assert.NoError(t, g.AddLink("", "Activity_1jelc91", "Activity_1id12f4")) // Check Credit Score --> Feedback Risk Assessment Result
+	assert.NoError(t, g.AddLink("1", "Activity_0o84rnf", "Activity_1jelc91"))  // Check Billing --> Check Credit Score
+	assert.NoError(t, g.AddLink("2", "Activity_0z3bka9", "Activity_0i96zzv"))  // Request Credit Score --> Retrieve Credit Score
+	assert.NoError(t, g.AddLink("3", "Activity_0l71uiq", "Activity_0bydgx6"))  // Request Fraud Validation --> Internal Fraud Validation
+	assert.NoError(t, g.AddLink("4", "Activity_0kpp56m", "Activity_0o84rnf"))  // Check Fraud --> Check Billing
+	assert.NoError(t, g.AddLink("5", "Activity_1jelc91", "Activity_0z3bka9"))  // Check Credit Score --> Request Credit Score
+	assert.NoError(t, g.AddLink("6", "Activity_03xsx2d", "Activity_1xyli2s"))  // Check Blacklist --> Request Blacklist Validation
+	assert.NoError(t, g.AddLink("7", "Event_0jm34t5", "Activity_03xsx2d"))     //  --> Check Blacklist
+	assert.NoError(t, g.AddLink("8", "Activity_1id12f4", "Event_1gnl54n"))     // Feedback Risk Assessment Result -->
+	assert.NoError(t, g.AddLink("9", "Activity_0kpp56m", "Activity_0l71uiq"))  // Check Fraud --> Request Fraud Validation
+	assert.NoError(t, g.AddLink("10", "Activity_0o84rnf", "Activity_1dbuz2n")) // Check Billing --> Request Billing Validation
+	assert.NoError(t, g.AddLink("11", "Activity_1xyli2s", "Activity_1gn4p38")) // Request Blacklist Validation --> External Blacklist Validation
+	assert.NoError(t, g.AddLink("12", "Activity_03xsx2d", "Activity_0kpp56m")) // Check Blacklist --> Check Fraud
+	assert.NoError(t, g.AddLink("13", "Activity_1dbuz2n", "Activity_0kpif64")) // Request Billing Validation --> Billing Validation
+	assert.NoError(t, g.AddLink("14", "Activity_1jelc91", "Activity_1id12f4")) // Check Credit Score --> Feedback Risk Assessment Result
 	expect := []orderNode{
-		{order: "1", node: "Event_0jm34t5"},      //
-		{order: "2", node: "Activity_03xsx2d"},   // Check Blacklist
-		{order: "2.1", node: "Activity_1xyli2s"}, // Request Blacklist Validation
-		{order: "2.2", node: "Activity_1gn4p38"}, // External Blacklist Validation
-		{order: "3", node: "Activity_0kpp56m"},   // Check Fraud
-		{order: "3.1", node: "Activity_0l71uiq"}, // Request Fraud Validation
-		{order: "3.2", node: "Activity_0bydgx6"}, // Internal Fraud Validation
-		{order: "4", node: "Activity_0o84rnf"},   // Check Billing
-		{order: "4.1", node: "Activity_1dbuz2n"}, // Request Billing Validation
-		{order: "4.2", node: "Activity_0kpif64"}, // Billing Validation
-		{order: "5", node: "Activity_1jelc91"},   // Check Credit Score
-		{order: "5.1", node: "Activity_1id12f4"}, // Feedback Risk Assessment Result
-		{order: "5.2", node: "Event_1gnl54n"},    //
-		{order: "6", node: "Activity_0z3bka9"},   // Request Credit Score
-		{order: "7", node: "Activity_0i96zzv"},   // Retrieve Credit Score
+		{order: "1", node: "Event_0jm34t5"},                        //
+		{order: "2", node: "Activity_03xsx2d", fromLinkID: "7"},    // Check Blacklist
+		{order: "2.1", node: "Activity_1xyli2s", fromLinkID: "6"},  // Request Blacklist Validation
+		{order: "2.2", node: "Activity_1gn4p38", fromLinkID: "11"}, // External Blacklist Validation
+		{order: "3", node: "Activity_0kpp56m", fromLinkID: "12"},   // Check Fraud
+		{order: "3.1", node: "Activity_0l71uiq", fromLinkID: "9"},  // Request Fraud Validation
+		{order: "3.2", node: "Activity_0bydgx6", fromLinkID: "3"},  // Internal Fraud Validation
+		{order: "4", node: "Activity_0o84rnf", fromLinkID: "4"},    // Check Billing
+		{order: "4.1", node: "Activity_1dbuz2n", fromLinkID: "10"}, // Request Billing Validation
+		{order: "4.2", node: "Activity_0kpif64", fromLinkID: "13"}, // Billing Validation
+		{order: "5", node: "Activity_1jelc91", fromLinkID: "1"},    // Check Credit Score
+		{order: "5.1", node: "Activity_1id12f4", fromLinkID: "14"}, // Feedback Risk Assessment Result
+		{order: "5.2", node: "Event_1gnl54n", fromLinkID: "8"},     //
+		{order: "6", node: "Activity_0z3bka9", fromLinkID: "5"},    // Request Credit Score
+		{order: "7", node: "Activity_0i96zzv", fromLinkID: "2"},    // Retrieve Credit Score
 	}
-	testTopologicalSort(t, g, expect, false)
+	testTopologicalSort(t, g, expect, false, true)
 }
 
 func TestTopologicalSort003(t *testing.T) {
@@ -414,7 +418,7 @@ func TestTopologicalSort003(t *testing.T) {
 		{order: "15", node: "Activity_1c5tycp"},  // Notification
 		{order: "16", node: "Event_0r30wdr"},     // End
 	}
-	testTopologicalSort(t, g, expect, false)
+	testTopologicalSort(t, g, expect, false, false)
 }
 
 func TestTopologicalSort004(t *testing.T) {
@@ -453,7 +457,7 @@ func TestTopologicalSort004(t *testing.T) {
 		{order: "15", node: "Activity_1c5tycp"},  // Notification
 		{order: "16", node: "Event_0r30wdr"},     // End
 	}
-	testTopologicalSort(t, g, expect, false)
+	testTopologicalSort(t, g, expect, false, false)
 }
 
 func TestTopologicalSort005(t *testing.T) {
@@ -690,7 +694,7 @@ func TestTopologicalSort005(t *testing.T) {
 		{order: "C.0003.0001", node: "Activity_1sgwv9e"},                           // Post Port-in resubmission request
 		{order: "C.0004", node: "Activity_0ku6ql7"},                                // Perform CRMS validations (resubmission)
 	}
-	testTopologicalSort(t, g, expect, true)
+	testTopologicalSort(t, g, expect, true, false)
 }
 
 func TestTopologicalSort006(t *testing.T) {
@@ -747,7 +751,7 @@ func TestTopologicalSort006(t *testing.T) {
 		{order: "0006", node: "Activity_139t6xx"},           // Account Data Viewed
 		{order: "0007", node: "Event_1o2dsrx"},              //
 	}
-	testTopologicalSort(t, g, expect, true)
+	testTopologicalSort(t, g, expect, true, false)
 }
 
 func TestTopologicalSort007(t *testing.T) {
@@ -842,5 +846,5 @@ func TestTopologicalSort007(t *testing.T) {
 		{order: "0011", node: "Activity_1e9uv0g"},           // Returns Billing Check Result
 		{order: "0012", node: "Activity_173n75w"},           // Request for Payment regularization
 	}
-	testTopologicalSort(t, g, expect, true)
+	testTopologicalSort(t, g, expect, true, false)
 }

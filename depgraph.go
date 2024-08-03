@@ -27,6 +27,7 @@ type dependencyMap map[any]nodeMap
 
 type TopologyOrder struct {
 	Node       any
+	FromLinkID string
 	Step       string
 	SortedStep string
 	Level      int
@@ -42,6 +43,7 @@ type Graph struct {
 	// `dependentMap` tracks parent -> children.
 	dependentMap dependencyMap
 	// Keep track of the nodes of the graph themselves.
+	linkMap map[any]map[any]string
 
 	orderedTopology []*TopologyOrder
 	handled         map[any]*TopologyOrder
@@ -49,9 +51,10 @@ type Graph struct {
 
 func New() *Graph {
 	return &Graph{
-		dependencyMap: make(dependencyMap),
-		dependentMap:  make(dependencyMap),
-		nodes:         make(nodeMap),
+		dependencyMap: make(dependencyMap, 20),
+		dependentMap:  make(dependencyMap, 20),
+		nodes:         make(nodeMap, 20),
+		linkMap:       make(map[any]map[any]string, 20),
 	}
 }
 
@@ -75,9 +78,21 @@ func (g *Graph) AddNode(id any, x, y float32) {
 	return
 }
 
-// AddLink id here for potential future use
-func (g *Graph) AddLink(id string, from, to any) error {
-	return g.DependOn(to, from)
+// AddLink adds a link between two nodes and records the linkID, only one linkID allowed between nodes
+func (g *Graph) AddLink(linkID string, from, to any) (err error) {
+	if err = g.DependOn(to, from); err != nil || linkID == "" {
+		return
+	}
+	if linkFromMap, inFromMap := g.linkMap[from]; !inFromMap {
+		g.linkMap[from] = map[any]string{to: linkID}
+	} else if id, inToMap := linkFromMap[to]; !inToMap {
+		linkFromMap[to] = linkID
+	} else {
+		if linkID != id {
+			return fmt.Errorf("link %v and %v both link node %v and %v", linkID, id, from, to)
+		}
+	}
+	return
 }
 
 // DependOn sets a dependency between a child and parent
@@ -224,6 +239,7 @@ func (g *Graph) clone() *Graph {
 		dependencyMap: copyDepMap(g.dependencyMap),
 		dependentMap:  copyDepMap(g.dependentMap),
 		nodes:         copyNodeset(g.nodes),
+		linkMap:       g.linkMap, // This can be a pointer as it doesn't get mangled
 	}
 }
 
@@ -312,16 +328,16 @@ func (g *Graph) TopologicalSort() []*TopologyOrder {
 	// Copy the graph, so we can remove things we've visited
 	shrinkingGraph := g.clone()
 	shrinkingGraph.handled = make(map[any]*TopologyOrder, len(g.nodes))
-	shrinkingGraph.sortLeaves("", "", 0, 0, nil)
+	shrinkingGraph.sortLeaves("", "", 0, 0, nil, nil)
 	sort.Slice(shrinkingGraph.orderedTopology, func(i, j int) bool {
 		return shrinkingGraph.orderedTopology[i].SortedStep < shrinkingGraph.orderedTopology[j].SortedStep
 	})
 	return shrinkingGraph.orderedTopology
 }
 
-// The graph is a shrinking graph, that is, as we deal with something we remove from the graph
+// sortLeaves is a shrinking graph algorithm, that is, as we deal with something we remove from the graph
 // Stops any issues with recursion in the graph
-func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, children nodeMap) {
+func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, previousNode any, children nodeMap) {
 	rootLeaf := prefix == "" && parent == 0 && level == 0
 	var leaves []any
 	if children == nil {
@@ -360,6 +376,7 @@ func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, child
 	offset := parent + 1
 	parentPrefix := prefix
 	parentSortedPrefix := sortedPrefix
+	fromNode := previousNode
 	for i, leafNode := range leaves {
 		//stopAts := []string{"Event_1gnl54n", "Activity_0l71uiq"} //Activity_00qw565
 		//for _, stopAt := range stopAts {
@@ -383,6 +400,7 @@ func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, child
 				prefix = fmt.Sprintf("%c.", 64+i) // Use a letter for the top layer - different paths!
 				sortedPrefix = prefix
 			} else { // Prefix format depends on number of leaves
+				fromNode = previousNode
 				switch len(leaves) {
 				case 2: // If we only have two leaves then we simplify the second prefix (i.e. 1-1,1-2,1-3)
 					prefix = fmt.Sprintf("%s%d.", parentPrefix, parent)
@@ -395,9 +413,15 @@ func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, child
 		}
 		to := &TopologyOrder{
 			Node:       leafNode,
-			SortedStep: fmt.Sprintf("%s%04d", sortedPrefix, offset),
+			FromLinkID: "",
 			Step:       fmt.Sprintf("%s%d", prefix, offset),
+			SortedStep: fmt.Sprintf("%s%04d", sortedPrefix, offset),
 			Level:      level,
+		}
+		if fromNode != nil && len(g.linkMap) > 0 {
+			if toLinkMap, inMap := g.linkMap[fromNode]; inMap {
+				to.FromLinkID = toLinkMap[leafNode]
+			}
 		}
 		g.orderedTopology = append(g.orderedTopology, to)
 		g.handled[leafNode] = to
@@ -406,9 +430,10 @@ func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, child
 		// If we're following a path then keep following until the end
 		// If this is a singleton root step then don't go down a level
 		if c == nil && children != nil || (rootLeaf && c == nil) {
+			fromNode = leafNode
 			continue
 		}
-		g.sortLeaves(prefix, sortedPrefix, offset, level, c)
+		g.sortLeaves(prefix, sortedPrefix, offset, level, leafNode, c)
 	}
 }
 
