@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"strings"
 )
 
 // https://dave.cheney.net/2014/03/25/the-empty-struct
@@ -11,10 +12,11 @@ import (
 // TimDadd - modified to use any instead of string and new sort algorithm
 
 type node struct {
-	id       any
-	x        float32
-	y        float32
-	addOrder int
+	id        any
+	x         float32
+	y         float32
+	addOrder  int
+	isGateway bool
 }
 
 // A node in this graph is just any, so a nodeMap is a map whose
@@ -43,7 +45,7 @@ type Graph struct {
 	// `dependentMap` tracks parent -> children.
 	dependentMap dependencyMap
 	// Keep track of the nodes of the graph themselves.
-	linkMap map[any]map[any]string
+	linkMap map[any]map[any]string // [from][to]ID
 
 	orderedTopology []*TopologyOrder
 	handled         map[any]*TopologyOrder
@@ -68,12 +70,27 @@ func (g *Graph) Nodes() (nodes []any) {
 	return nodes
 }
 
-func (g *Graph) AddNode(id any, x, y float32) {
-	g.nodes[id] = &node{
-		id:       id,
-		x:        x,
-		y:        y,
-		addOrder: len(g.nodes),
+// AddNode adds/updates a node on the graph.  isGateway used in AllPaths algorithm
+func (g *Graph) AddNode(id any, x, y float32, isGateway ...bool) (err error) {
+	// If the node already exists it will be updated
+	var gateway bool
+	if len(isGateway) > 0 {
+		gateway = isGateway[0]
+	}
+	if n, ok := g.nodes[id]; ok {
+		if (x + y) > 0 { // If 0 passed then assume only the gateway is changing
+			n.x = x
+			n.y = y
+		}
+		n.isGateway = gateway
+	} else {
+		g.nodes[id] = &node{
+			id:        id,
+			x:         x,
+			y:         y,
+			addOrder:  len(g.nodes),
+			isGateway: gateway,
+		}
 	}
 	return
 }
@@ -445,4 +462,125 @@ func (g *Graph) unhandledLeaves() (leaves []any) {
 		}
 	}
 	return leaves
+}
+
+// AllPaths uses the isGateway flag on nodes to know where multiple paths are needed
+// If we have a decision Node A with 2 decisions A' A” then we should get 2 paths
+// If we have two decision nodes A & B with A', A”, B', B”, B”' then we should get 6 paths
+// First we find all the path options by using the dependency map
+// Then we recurse through making a copy of the graph but removing anything from the dependency map that we don't want
+// So that only one path is found by the topology sort
+func (g *Graph) AllPaths() (pathNames []string, allTopologies [][]*TopologyOrder) {
+	// First determine all the paths based upon the decision nodes
+	var gatewayNodes = make([]any, 0, 10)        // []from
+	var gatewayDependents = make([][]any, 0, 10) //[][]to
+	totalPaths := 1
+	gatewayCount := 0
+	for f, n := range g.nodes { // From Node, Node
+		if n.isGateway {
+			dependents := g.immediateDependents(f)
+			if len(dependents) > 1 {
+				gatewayNodes = append(gatewayNodes, f)
+				gatewayDependents = append(gatewayDependents, make([]any, 0, len(dependents)))
+				for to := range dependents {
+					gatewayDependents[gatewayCount] = append(gatewayDependents[gatewayCount], to)
+				}
+				totalPaths *= len(dependents)
+				gatewayCount++
+			}
+		}
+	}
+	//fmt.Printf("Decision Node: %d, Paths:%d\n", gatewayCount, totalPaths)
+	paths := Combinations2D(gatewayDependents)
+	allTopologies = make([][]*TopologyOrder, 0, len(paths))
+	pathNames = make([]string, 0, len(paths))
+	// Now loop through all the possible combinations
+	// Make a copy of the graph
+	// Only keep the combination of interest
+	// Build the topology
+	// do for next combination
+	for _, path := range paths {
+		pathGraph := g.clone()
+		pathName := make([]string, len(path))
+		for i, to := range path {
+			from := gatewayNodes[i]
+			toNode := g.nodes[to]
+			// Just replace the dependency map with the choice we want
+			// This isn't changing dependency map - might need to add later
+			pathGraph.dependentMap[from] = nodeMap{to: g.nodes[to]}
+			pathName[i] = fmt.Sprintf("%s", toNode.id)
+		}
+		// Potentially this comes up with duplicate schemas
+		allTopologies = append(allTopologies, pathGraph.TopologicalSort())
+		pathNames = append(pathNames, strings.Join(pathName, " / "))
+	}
+	return
+}
+
+// Combinations2D provides a list of all combinations of a 2D array
+// if array is [2,3,4],[4,5,6] then output is [2,4][2,5][2,6][3,4][3,5][3,6]...
+func Combinations2D(array2D [][]any) (combinations [][]any) {
+	if len(array2D) == 0 {
+		return
+	}
+	totalCombinations := 1
+	for _, array := range array2D {
+		totalCombinations *= len(array)
+	}
+	combinations = make([][]any, 0, totalCombinations)
+	// Now we need to go through each combination of gateway nodes and complete the topological sort
+	idx := make([]int, len(array2D)) // Index into each node starting at 0
+	for {
+		// Record the current combination
+		var combination = make([]any, len(array2D))
+		for i := 0; i < len(array2D); i++ {
+			combination[i] = array2D[i][idx[i]]
+		}
+		combinations = append(combinations, combination)
+		// Find the rightmost array that still has an item to consider
+		var next int
+		for next = len(array2D) - 1; next >= 0; next-- {
+			if idx[next] < len(array2D[next])-1 {
+				break
+			}
+		}
+		if next < 0 {
+			break // All permutations covered
+		}
+		idx[next]++ // Next Permutation
+		// Reset everything again
+		for i := next + 1; i < len(array2D); i++ {
+			idx[i] = 0
+		}
+	}
+	return
+}
+
+// DFS Depth First Search
+func (g *Graph) DFS(s, f any) (paths [][]any) {
+	visited := make(map[any]bool)
+	var path []any
+	g.dfs(s, f, visited, path, &paths)
+	return paths
+}
+
+// DFS Depth First Search
+func (g *Graph) dfs(s any, e any, visited map[any]bool, path []any, paths *[][]any) {
+	visited[s] = true
+	path = append(path, s)
+
+	// Reached the end
+	if s == e {
+		*paths = append(*paths, path)
+	} else {
+		tos := g.linkMap[s]
+		for to := range tos {
+			if !visited[to] {
+				g.dfs(to, e, visited, path, paths)
+			}
+		}
+	}
+
+	delete(visited, s)
+	path = path[:len(path)-1]
 }

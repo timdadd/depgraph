@@ -303,7 +303,7 @@ func TestTopologicalSort001(t *testing.T) {
 	assert.NoError(t, g.AddLink("29", "Request Confirm & Release of eSIM", "Post eSIM Confirm & Release Request"))
 	assert.NoError(t, g.AddLink("30", "Post eSIM Confirm & Release Request", "Mark eSIM as Confirmed & Released"))
 
-	expect := []orderNode{
+	expectSort := []orderNode{
 		{order: "1", node: "Order Submitted", fromLinkID: ""},
 		{order: "2", node: "SIM Type?", fromLinkID: "1"},
 		{order: "3", node: "Prompt for email address", fromLinkID: "2"},
@@ -333,7 +333,51 @@ func TestTopologicalSort001(t *testing.T) {
 		{order: "15", node: "Mark eSIM as Installed", fromLinkID: "27"},
 		{order: "16", node: "eSIM Installed", fromLinkID: "28"},
 	}
-	testTopologicalSort(t, g, expect, false, true)
+	testTopologicalSort(t, g, expectSort, false, true)
+
+	//expectPaths := [][]orderNode{{
+	//	{order: "1", node: "Order Submitted", fromLinkID: ""},
+	//	{order: "2", node: "SIM Type?", fromLinkID: "1"},
+	//	{order: "3", node: "Prompt for email address", fromLinkID: "2"},
+	//	{order: "4", node: "Enter email address", fromLinkID: "3"},
+	//	{order: "5", node: "Capture email address", fromLinkID: "4"},
+	//	{order: "6", node: "SIM Type Known", fromLinkID: "6"},
+	//	{order: "7", node: "Submit & Display Order", fromLinkID: "7"},
+	//	{order: "7.1", node: "Review Order Confirmation", fromLinkID: "8"},
+	//	{order: "8", node: "In Parallel", fromLinkID: "9"},
+	//	{order: "8.1", node: "Require Logistics Order?", fromLinkID: "10"},
+	//	{order: "8.2", node: "Fulfil Logistics Order", fromLinkID: "12"},
+	//	{order: "8.3", node: "Logistics Handled", fromLinkID: "14"},
+	//	{order: "8.4", node: "Submit CRM Order", fromLinkID: "15"},
+	//	{order: "8.5", node: "Validate Order", fromLinkID: "16"},
+	//	{order: "8.6", node: "Perform CRMS Validations", fromLinkID: "17"},
+	//	{order: "8.7", node: "Order Fulfilment", fromLinkID: "18"},
+	//	{order: "9", node: "Is eSIM?", fromLinkID: "11"},
+	//	{order: "10", node: "Request Confirm & Release of eSIM", fromLinkID: "19"},
+	//	{order: "10.1", node: "Post eSIM Confirm & Release Request", fromLinkID: "29"},
+	//	{order: "10.2", node: "Mark eSIM as Confirmed & Released", fromLinkID: "30"},
+	//	{order: "11", node: "Generate & Display eSIM QR Code", fromLinkID: "21"},
+	//	{order: "11.1", node: "Show & Download eSIM Profile", fromLinkID: "22"},
+	//	{order: "12", node: "Send eMail", fromLinkID: "23"},
+	//	{order: "12.1", node: "xSIM Handled", fromLinkID: "24"},
+	//	{order: "13", node: "Wait for Download", fromLinkID: "25"},
+	//	{order: "14", node: "Mark eSIM as Downloaded", fromLinkID: "26"},
+	//	{order: "15", node: "Mark eSIM as Installed", fromLinkID: "27"},
+	//	{order: "16", node: "eSIM Installed", fromLinkID: "28"},
+	//}}
+
+	assert.NoError(t, g.AddNode("SIM Type?", 0, 0, true))
+	assert.NoError(t, g.AddNode("SIM Type Known", 0, 0, true))
+	assert.NoError(t, g.AddNode("Require Logistics Order?", 0, 0, true))
+	assert.NoError(t, g.AddNode("Is eSIM?", 0, 0, true))
+
+	pathNames, allPaths := g.AllPaths()
+	for p, path := range pathNames {
+		t.Logf("Path: %s", path)
+		for _, ts := range allPaths[p] {
+			t.Logf("  %s:%s", ts.SortedStep, ts.Node)
+		}
+	}
 }
 
 //func TestStress(t *testing.T) {
@@ -462,53 +506,53 @@ func TestTopologicalSort004(t *testing.T) {
 
 func TestTopologicalSort005(t *testing.T) {
 	g := depgraph.New()
-	g.AddNode("Activity_0fs7ehp", 4780.000000, 1514.000000)
-	g.AddNode("Activity_14d0wi6", 4780.000000, 2246.000000)
+	g.AddNode("Activity_0fs7ehp", 4780.000000, 1514.000000, false)
+	g.AddNode("Activity_14d0wi6", 4780.000000, 2246.000000, false)
 	assert.NoError(t, g.AddLink("", "Activity_0fs7ehp", "Activity_14d0wi6")) // Post Port-in cancelation --> Process request to cancel Port-in
-	g.AddNode("Gateway_1icfqwu", 4075.000000, 1381.000000)
-	g.AddNode("Gateway_0r20x7i", 4445.000000, 1381.000000)
+	g.AddNode("Gateway_1icfqwu", 4075.000000, 1381.000000, true)
+	g.AddNode("Gateway_0r20x7i", 4445.000000, 1381.000000, false)
 	assert.NoError(t, g.AddLink("", "Gateway_1icfqwu", "Gateway_0r20x7i")) // Order requires Logistics SIM Card delivery? --> endif
-	g.AddNode("Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f", 3938.000000, 1366.000000)
-	g.AddNode("Gateway_1icfqwu", 4075.000000, 1381.000000)
+	g.AddNode("Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f", 3938.000000, 1366.000000, false)
+	g.AddNode("Gateway_1icfqwu", 4075.000000, 1381.000000, true)
 	assert.NoError(t, g.AddLink("", "Id_4a187b58-f35c-4cdd-8ac2-2f90a9425d3f", "Gateway_1icfqwu")) // Decompose, Orchestrate Order --> Order requires Logistics SIM Card delivery?
-	g.AddNode("Gateway_1uv7159", 6475.000000, 961.000000)
-	g.AddNode("Gateway_19ib8qw", 6575.000000, 961.000000)
+	g.AddNode("Gateway_1uv7159", 6475.000000, 961.000000, true)
+	g.AddNode("Gateway_19ib8qw", 6575.000000, 961.000000, false)
 	assert.NoError(t, g.AddLink("", "Gateway_1uv7159", "Gateway_19ib8qw")) // endif --> Order includes Device?
-	g.AddNode("Activity_1qj1e0v", 4780.000000, 946.000000)
-	g.AddNode("Activity_1cofeb7", 4780.000000, 1127.000000)
+	g.AddNode("Activity_1qj1e0v", 4780.000000, 946.000000, false)
+	g.AddNode("Activity_1cofeb7", 4780.000000, 1127.000000, false)
 	assert.NoError(t, g.AddLink("", "Activity_1qj1e0v", "Activity_1cofeb7")) // Post Port-in cancelation request --> Cancel Port-in Order
-	g.AddNode("Event_156e4wi", 3692.000000, 968.000000)
-	g.AddNode("Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74", 3785.000000, 946.000000)
+	g.AddNode("Event_156e4wi", 3692.000000, 968.000000, false)
+	g.AddNode("Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74", 3785.000000, 946.000000, false)
 	assert.NoError(t, g.AddLink("", "Event_156e4wi", "Id_9803dd09-4618-4d4f-9a36-7fb2247d1e74")) //  --> Post Order Submission
-	g.AddNode("Activity_1176p0t", 5930.000000, 1366.000000)
-	g.AddNode("Activity_1hcsk28", 5930.000000, 1514.000000)
+	g.AddNode("Activity_1176p0t", 5930.000000, 1366.000000, false)
+	g.AddNode("Activity_1hcsk28", 5930.000000, 1514.000000, false)
 	assert.NoError(t, g.AddLink("", "Activity_1176p0t", "Activity_1hcsk28")) // Sync Port-in RFS --> Post Port-in RFS
-	g.AddNode("Activity_0wyrzg9", 4320.000000, 1640.000000)
-	g.AddNode("Activity_15shrim", 4320.000000, 1514.000000)
+	g.AddNode("Activity_0wyrzg9", 4320.000000, 1640.000000, false)
+	g.AddNode("Activity_15shrim", 4320.000000, 1514.000000, false)
 	assert.NoError(t, g.AddLink("", "Activity_0wyrzg9", "Activity_15shrim")) // Notify delivery Completion - pSIM delivered --> Post delivery completion - pSIM delivered
-	g.AddNode("Activity_07y35my", 6080.000000, 946.000000)
-	g.AddNode("Gateway_1iqkz3r", 6235.000000, 961.000000)
+	g.AddNode("Activity_07y35my", 6080.000000, 946.000000, false)
+	g.AddNode("Gateway_1iqkz3r", 6235.000000, 961.000000, false)
 	assert.NoError(t, g.AddLink("", "Activity_07y35my", "Gateway_1iqkz3r")) // Receive Callback for Inventory update and device delivery --> SIM type?
-	g.AddNode("Activity_0gc946n", 6330.000000, 946.000000)
-	g.AddNode("Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408", 6330.000000, 1996.000000)
+	g.AddNode("Activity_0gc946n", 6330.000000, 946.000000, false)
+	g.AddNode("Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408", 6330.000000, 1996.000000, false)
 	assert.NoError(t, g.AddLink("", "Activity_0gc946n", "Id_7c12b81c-70df-419e-bdea-bbbe4e2cc408")) // Post SIM card in use --> Mark SIM card as used
-	g.AddNode("Id_af69b80c-765a-4ae7-be40-22cb244b611b", 6080.000000, 1366.000000)
-	g.AddNode("Event_0imzxiq", 6942.000000, 1388.000000)
+	g.AddNode("Id_af69b80c-765a-4ae7-be40-22cb244b611b", 6080.000000, 1366.000000, false)
+	g.AddNode("Event_0imzxiq", 6942.000000, 1388.000000, false)
 	assert.NoError(t, g.AddLink("", "Id_af69b80c-765a-4ae7-be40-22cb244b611b", "Event_0imzxiq")) // Order Completion Processing -->
-	g.AddNode("Gateway_19ib8qw", 6575.000000, 961.000000)
-	g.AddNode("Gateway_0y26mfn", 6815.000000, 961.000000)
+	g.AddNode("Gateway_19ib8qw", 6575.000000, 961.000000, true)
+	g.AddNode("Gateway_0y26mfn", 6815.000000, 961.000000, false)
 	assert.NoError(t, g.AddLink("", "Gateway_19ib8qw", "Gateway_0y26mfn")) // Order includes Device? --> endif
-	g.AddNode("Gateway_1iqkz3r", 6235.000000, 961.000000)
-	g.AddNode("Gateway_1uv7159", 6475.000000, 961.000000)
+	g.AddNode("Gateway_1iqkz3r", 6235.000000, 961.000000, true)            // Duplicate
+	g.AddNode("Gateway_1uv7159", 6475.000000, 961.000000, false)
 	assert.NoError(t, g.AddLink("", "Gateway_1iqkz3r", "Gateway_1uv7159")) // SIM type? --> endif
-	g.AddNode("Gateway_15nz4h8", 5351.000000, 1278.000000)
-	g.AddNode("Gateway_0m3neg2", 5351.000000, 1142.000000)
+	g.AddNode("Gateway_15nz4h8", 5351.000000, 1278.000000, true)
+	g.AddNode("Gateway_0m3neg2", 5351.000000, 1142.000000, false)
 	assert.NoError(t, g.AddLink("", "Gateway_15nz4h8", "Gateway_0m3neg2")) // Next action? --> Port-in canceled
-	g.AddNode("Activity_1176p0t", 5930.000000, 1366.000000)
-	g.AddNode("Id_af69b80c-765a-4ae7-be40-22cb244b611b", 6080.000000, 1366.000000)
+	g.AddNode("Activity_1176p0t", 5930.000000, 1366.000000, false)
+	g.AddNode("Id_af69b80c-765a-4ae7-be40-22cb244b611b", 6080.000000, 1366.000000, false)
 	assert.NoError(t, g.AddLink("", "Activity_1176p0t", "Id_af69b80c-765a-4ae7-be40-22cb244b611b")) // Sync Port-in RFS --> Order Completion Processing
-	g.AddNode("Activity_0er1yq6", 5170.000000, 1366.000000)
-	g.AddNode("Gateway_0u6v33s", 5351.000000, 1381.000000)
+	g.AddNode("Activity_0er1yq6", 5170.000000, 1366.000000, false)
+	g.AddNode("Gateway_0u6v33s", 5351.000000, 1381.000000, false)
 	assert.NoError(t, g.AddLink("", "Activity_0er1yq6", "Gateway_0u6v33s")) // Process feedback to Port-in request --> Port-in response?
 	g.AddNode("Id_33b7ee99-afd9-40b7-bee3-a0637ee9f340", 5637.000000, 1514.000000)
 	g.AddNode("Id_05abb9f9-43e9-4a25-be75-0ca2dfd38502", 5637.000000, 1766.000000)
