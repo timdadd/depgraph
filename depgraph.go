@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"sort"
-	"strings"
 )
 
 // https://dave.cheney.net/2014/03/25/the-empty-struct
@@ -470,7 +469,7 @@ func (g *Graph) unhandledLeaves() (leaves []any) {
 // First we find all the path options by using the dependency map
 // Then we recurse through making a copy of the graph but removing anything from the dependency map that we don't want
 // So that only one path is found by the topology sort
-func (g *Graph) AllPaths() (pathNames []string, allTopologies [][]*TopologyOrder) {
+func (g *Graph) AllPaths() (pathNames [][]string, allTopologies [][]*TopologyOrder) {
 	// First determine all the paths based upon the decision nodes
 	var gatewayNodes = make([]any, 0, 10)        // []from
 	var gatewayDependents = make([][]any, 0, 10) //[][]to
@@ -493,7 +492,7 @@ func (g *Graph) AllPaths() (pathNames []string, allTopologies [][]*TopologyOrder
 	//fmt.Printf("Decision Node: %d, Paths:%d\n", gatewayCount, totalPaths)
 	paths := Combinations2D(gatewayDependents)
 	allTopologies = make([][]*TopologyOrder, 0, len(paths))
-	pathNames = make([]string, 0, len(paths))
+	pathNames = make([][]string, 0, len(paths))
 	// Now loop through all the possible combinations
 	// Make a copy of the graph
 	// Only keep the combination of interest
@@ -512,7 +511,7 @@ func (g *Graph) AllPaths() (pathNames []string, allTopologies [][]*TopologyOrder
 		}
 		// Potentially this comes up with duplicate schemas
 		allTopologies = append(allTopologies, pathGraph.TopologicalSort())
-		pathNames = append(pathNames, strings.Join(pathName, " / "))
+		pathNames = append(pathNames, pathName)
 	}
 	return
 }
