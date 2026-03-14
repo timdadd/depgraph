@@ -8,26 +8,26 @@ import (
 
 // https://dave.cheney.net/2014/03/25/the-empty-struct
 // https://github.com/kendru/darwin/blob/main/go/depgraph/depgraph.go
-// TimDadd - modified to use any instead of string and new sort algorithm
+// TimDadd - modified to use interface{} instead of string and new sort algorithm
 
 type node struct {
-	id        any
+	id        interface{}
 	x         float32
 	y         float32
 	addOrder  int
 	isGateway bool
 }
 
-// A node in this graph is just any, so a nodeMap is a map whose
+// A node in this graph is just interface{}, so a nodeMap is a map whose
 // keys are the nodes that are present.  Int can be a weighting if everything else is equal
-type nodeMap map[any]*node
+type nodeMap map[interface{}]*node
 
 // dependencyMap tracks the nodes that have some dependency relationship to
 // some other node, represented by the key of the map.
-type dependencyMap map[any]nodeMap
+type dependencyMap map[interface{}]nodeMap
 
 type TopologyOrder struct {
-	Node       any
+	Node       interface{}
 	FromLinkID string
 	Step       string
 	SortedStep string
@@ -44,10 +44,10 @@ type Graph struct {
 	// `dependentMap` tracks parent -> children.
 	dependentMap dependencyMap
 	// Keep track of the nodes of the graph themselves.
-	linkMap map[any]map[any]string // [from][to]ID
+	linkMap map[interface{}]map[interface{}]string // [from][to]ID
 
 	orderedTopology []*TopologyOrder
-	handled         map[any]*TopologyOrder
+	handled         map[interface{}]*TopologyOrder
 }
 
 func New() *Graph {
@@ -55,12 +55,12 @@ func New() *Graph {
 		dependencyMap: make(dependencyMap, 20),
 		dependentMap:  make(dependencyMap, 20),
 		nodes:         make(nodeMap, 20),
-		linkMap:       make(map[any]map[any]string, 20),
+		linkMap:       make(map[interface{}]map[interface{}]string, 20),
 	}
 }
 
-func (g *Graph) Nodes() (nodes []any) {
-	nodes = make([]any, len(g.nodes))
+func (g *Graph) Nodes() (nodes []interface{}) {
+	nodes = make([]interface{}, len(g.nodes))
 	i := 0
 	for n := range g.nodes {
 		nodes[i] = n
@@ -70,19 +70,21 @@ func (g *Graph) Nodes() (nodes []any) {
 }
 
 // AddNode adds/updates a node on the graph.  isGateway used in AllPaths algorithm
-func (g *Graph) AddNode(id any, x, y float32, isGateway ...bool) (err error) {
+func (g *Graph) AddNode(id interface{}, x, y float32, isGateway ...bool) (err error) {
 	// If the node already exists it will be updated
-	var gateway bool
-	if len(isGateway) > 0 {
-		gateway = isGateway[0]
-	}
 	if n, ok := g.nodes[id]; ok {
 		if (x + y) > 0 { // If 0 passed then assume only the gateway is changing
 			n.x = x
 			n.y = y
 		}
-		n.isGateway = gateway
+		if len(isGateway) > 0 {
+			n.isGateway = isGateway[0]
+		}
 	} else {
+		var gateway bool
+		if len(isGateway) > 0 {
+			gateway = isGateway[0]
+		}
 		g.nodes[id] = &node{
 			id:        id,
 			x:         x,
@@ -95,12 +97,12 @@ func (g *Graph) AddNode(id any, x, y float32, isGateway ...bool) (err error) {
 }
 
 // AddLink adds a link between two nodes and records the linkID, only one linkID allowed between nodes
-func (g *Graph) AddLink(linkID string, from, to any) (err error) {
+func (g *Graph) AddLink(linkID string, from, to interface{}) (err error) {
 	if err = g.DependOn(to, from); err != nil || linkID == "" {
 		return
 	}
 	if linkFromMap, inFromMap := g.linkMap[from]; !inFromMap {
-		g.linkMap[from] = map[any]string{to: linkID}
+		g.linkMap[from] = map[interface{}]string{to: linkID}
 	} else if id, inToMap := linkFromMap[to]; !inToMap {
 		linkFromMap[to] = linkID
 	} else {
@@ -112,7 +114,7 @@ func (g *Graph) AddLink(linkID string, from, to any) (err error) {
 }
 
 // DependOn sets a dependency between a child and parent
-func (g *Graph) DependOn(child, parent any) error {
+func (g *Graph) DependOn(child, parent interface{}) error {
 	if child == parent {
 		return errors.New("self-referential dependencyMap not allowed")
 	}
@@ -147,21 +149,21 @@ func (g *Graph) DependOn(child, parent any) error {
 }
 
 // DependsOn returns true if child depends on parent
-func (g *Graph) DependsOn(child, parent any) bool {
+func (g *Graph) DependsOn(child, parent interface{}) bool {
 	deps := g.dependencies(child)
 	_, ok := deps[parent]
 	return ok
 }
 
 // HasDependent returns true if child is dependent on parent
-func (g *Graph) HasDependent(parent, child any) bool {
+func (g *Graph) HasDependent(parent, child interface{}) bool {
 	deps := g.dependents(parent)
 	_, ok := deps[child]
 	return ok
 }
 
 // Leaves finds all nodes that don't have a dependency
-func (g *Graph) Leaves() (leaves []any) {
+func (g *Graph) Leaves() (leaves []interface{}) {
 	for nodeID := range g.nodes {
 		if _, ok := g.dependencyMap[nodeID]; !ok {
 			leaves = append(leaves, nodeID)
@@ -174,10 +176,10 @@ func (g *Graph) Leaves() (leaves []any) {
 // if `B` depends on `A`, then `A` is guaranteed to come before `B` in the sorted output.
 // The graph is guaranteed to be cycle-free because cycles are detected while building the
 // graph. Additionally, the output is grouped into "layers", which are guaranteed to not have
-// any dependencyMap within each layer. This is useful, e.g. when building an execution plan for
+// interface{} dependencyMap within each layer. This is useful, e.g. when building an execution plan for
 // some DAG, in which case each element within each layer could be executed in parallel. If you
 // do not need this layered property, use `Graph.TopoSorted()`, which flattens all elements.
-func (g *Graph) SortedLayers() (layers [][]any) {
+func (g *Graph) SortedLayers() (layers [][]interface{}) {
 	// Copy the graph
 	shrinkingGraph := g.clone()
 	for {
@@ -187,7 +189,7 @@ func (g *Graph) SortedLayers() (layers [][]any) {
 		}
 		if len(leaves) > 1 {
 			// Sort the leaves by number of dependentMap
-			dependents := make(map[any]int, len(leaves))
+			dependents := make(map[interface{}]int, len(leaves))
 			for _, leafNode := range leaves {
 				dependents[leafNode] = len(g.dependents(leafNode))
 			}
@@ -205,7 +207,7 @@ func (g *Graph) SortedLayers() (layers [][]any) {
 	return layers
 }
 
-func removeFromDepMap(dm dependencyMap, key, nodeId any) {
+func removeFromDepMap(dm dependencyMap, key, nodeId interface{}) {
 	nMap := dm[key]
 	if len(nMap) == 1 {
 		// The only element in the nodeMap must be `node`, so we
@@ -217,7 +219,7 @@ func removeFromDepMap(dm dependencyMap, key, nodeId any) {
 	}
 }
 
-func (g *Graph) remove(nodeID any) {
+func (g *Graph) remove(nodeID interface{}) {
 	// Remove edges from things that depend on `node`.
 	for dependent := range g.dependentMap[nodeID] {
 		removeFromDepMap(g.dependencyMap, dependent, nodeID)
@@ -234,19 +236,19 @@ func (g *Graph) remove(nodeID any) {
 	delete(g.nodes, nodeID)
 }
 
-func (g *Graph) dependencies(child any) nodeMap {
+func (g *Graph) dependencies(child interface{}) nodeMap {
 	return g.buildTransitive(child, g.immediateDependencies)
 }
 
-func (g *Graph) immediateDependencies(node any) nodeMap {
+func (g *Graph) immediateDependencies(node interface{}) nodeMap {
 	return g.dependencyMap[node]
 }
 
-func (g *Graph) dependents(parent any) nodeMap {
+func (g *Graph) dependents(parent interface{}) nodeMap {
 	return g.buildTransitive(parent, g.immediateDependents)
 }
 
-func (g *Graph) immediateDependents(node any) nodeMap {
+func (g *Graph) immediateDependents(node interface{}) nodeMap {
 	return g.dependentMap[node]
 }
 
@@ -261,16 +263,16 @@ func (g *Graph) clone() *Graph {
 
 // buildTransitive starts at `root` and continues calling `nextFn` to keep discovering more nodes until
 // the graph is exhausted. It returns the set of all discovered nodes.
-func (g *Graph) buildTransitive(rootNodeId any, nextFn func(any) nodeMap) nodeMap {
+func (g *Graph) buildTransitive(rootNodeId interface{}, nextFn func(interface{}) nodeMap) nodeMap {
 	if _, ok := g.nodes[rootNodeId]; !ok {
 		return nil
 	}
 	out := make(nodeMap)
-	searchNext := []any{rootNodeId}
+	searchNext := []interface{}{rootNodeId}
 	for len(searchNext) > 0 {
 		// List of new nodes from this layer of the dependency graph. This is
 		// assigned to `searchNext` at the end of the outer "discovery" loop.
-		var discovered []any
+		var discovered []interface{}
 		for _, nextNodeId := range searchNext {
 			// For each node to discover, find the next nodes.
 			for nextNode := range nextFn(nextNodeId) {
@@ -304,7 +306,7 @@ func copyDepMap(m dependencyMap) dependencyMap {
 	return out
 }
 
-func addNodeToNodeset(dm dependencyMap, key, nodeId any) {
+func addNodeToNodeset(dm dependencyMap, key, nodeId interface{}) {
 	n := &node{
 		id: nodeId,
 		x:  0,
@@ -321,14 +323,14 @@ func addNodeToNodeset(dm dependencyMap, key, nodeId any) {
 }
 
 // Sorted returns all the nodes in the graph sorted by layers
-func (g *Graph) Sorted() []any {
+func (g *Graph) Sorted() []interface{} {
 	nodeCount := 0
 	layers := g.SortedLayers()
 	for _, layer := range layers {
 		nodeCount += len(layer)
 	}
 
-	allNodes := make([]any, 0, nodeCount)
+	allNodes := make([]interface{}, 0, nodeCount)
 	for _, layer := range layers {
 		for _, n := range layer {
 			allNodes = append(allNodes, n)
@@ -339,11 +341,11 @@ func (g *Graph) Sorted() []any {
 }
 
 // TopologicalSort tries to prioritise the longest branch and is good for sequence diagrams
-// Any off shoots are handled before carrying on
+// interface{} off shoots are handled before carrying on
 func (g *Graph) TopologicalSort() []*TopologyOrder {
 	// Copy the graph, so we can remove things we've visited
 	shrinkingGraph := g.clone()
-	shrinkingGraph.handled = make(map[any]*TopologyOrder, len(g.nodes))
+	shrinkingGraph.handled = make(map[interface{}]*TopologyOrder, len(g.nodes))
 	shrinkingGraph.sortLeaves("", "", 0, 0, nil, nil)
 	sort.Slice(shrinkingGraph.orderedTopology, func(i, j int) bool {
 		return shrinkingGraph.orderedTopology[i].SortedStep < shrinkingGraph.orderedTopology[j].SortedStep
@@ -352,10 +354,10 @@ func (g *Graph) TopologicalSort() []*TopologyOrder {
 }
 
 // sortLeaves is a shrinking graph algorithm, that is, as we deal with something we remove from the graph
-// Stops any issues with recursion in the graph
-func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, previousNode any, children nodeMap) {
+// Stops interface{} issues with recursion in the graph
+func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, previousNode interface{}, children nodeMap) {
 	rootLeaf := prefix == "" && parent == 0 && level == 0
-	var leaves []any
+	var leaves []interface{}
 	if children == nil {
 		leaves = g.Leaves() // Find all nodes that don't have a dependency
 	} else {
@@ -370,7 +372,7 @@ func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, previ
 	}
 	if len(leaves) > 1 {
 		// Sort the leaves by number of dependentMap, most dependentMap first
-		dependents := make(map[any]int, len(leaves))
+		dependents := make(map[interface{}]int, len(leaves))
 		for _, leafNode := range leaves {
 			dependents[leafNode] = len(g.dependents(leafNode))
 		}
@@ -454,7 +456,7 @@ func (g *Graph) sortLeaves(prefix, sortedPrefix string, parent, level int, previ
 }
 
 // unhandledLeaves finds all nodes that don't have a dependency
-func (g *Graph) unhandledLeaves() (leaves []any) {
+func (g *Graph) unhandledLeaves() (leaves []interface{}) {
 	for node := range g.nodes {
 		if _, ok := g.dependencyMap[node]; !ok {
 			leaves = append(leaves, node)
@@ -467,32 +469,49 @@ func (g *Graph) unhandledLeaves() (leaves []any) {
 // If we have a decision Node A with 2 decisions A' A” then we should get 2 paths
 // If we have two decision nodes A & B with A', A”, B', B”, B”' then we should get 6 paths
 // First we find all the path options by using the dependency map
-// Then we recurse through making a copy of the graph but removing anything from the dependency map that we don't want
+// Then we recurse through making a copy of the graph but removing interface{}thing from the dependency map that we don't want
 // So that only one path is found by the topology sort
 func (g *Graph) AllPaths() (pathNames [][]string, allTopologies [][]*TopologyOrder) {
 	// First determine all the paths based upon the decision nodes
-	var gatewayNodes = make([]any, 0, 10)        // []from
-	var gatewayDependents = make([][]any, 0, 10) //[][]to
+	var gatewayNodes = make([]interface{}, 0, 10)        // []from
+	var gatewayDependents = make([][]interface{}, 0, 10) //[][]to
+	sortedGraph := g.TopologicalSort()
 	totalPaths := 1
 	gatewayCount := 0
-	for f, n := range g.nodes { // From Node, Node
-		if n.isGateway {
-			dependents := g.immediateDependents(f)
+	for _, n := range sortedGraph { // From NodeID, Node
+		if nd := g.nodes[n.Node]; nd != nil && nd.isGateway {
+			dependents := g.immediateDependents(nd.id)
 			if len(dependents) > 1 {
-				gatewayNodes = append(gatewayNodes, f)
-				gatewayDependents = append(gatewayDependents, make([]any, 0, len(dependents)))
+				gatewayNodes = append(gatewayNodes, nd.id)
+				gatewayDependents = append(gatewayDependents, make([]interface{}, 0, len(dependents)))
 				for to := range dependents {
 					gatewayDependents[gatewayCount] = append(gatewayDependents[gatewayCount], to)
 				}
+				//// Sort to keep the paths consistent on each run
+				//sort.Slice(gatewayDependents[gatewayCount], func(i, j int) bool {
+				//	switch it := gatewayDependents[gatewayCount][i].(type) {
+				//	case string:
+				//		return it < gatewayDependents[gatewayCount][j].(string)
+				//	case int:
+				//		return it < gatewayDependents[gatewayCount][j].(int)
+				//	default:
+				//		return false
+				//	}
+				//})
 				totalPaths *= len(dependents)
 				gatewayCount++
 			}
 		}
 	}
+	// Handle no gateways
+	if len(gatewayNodes) == 0 {
+		return [][]string{{"main"}}, [][]*TopologyOrder{g.TopologicalSort()}
+	}
 	//fmt.Printf("Decision Node: %d, Paths:%d\n", gatewayCount, totalPaths)
 	paths := Combinations2D(gatewayDependents)
 	allTopologies = make([][]*TopologyOrder, 0, len(paths))
 	pathNames = make([][]string, 0, len(paths))
+
 	// Now loop through all the possible combinations
 	// Make a copy of the graph
 	// Only keep the combination of interest
@@ -503,11 +522,15 @@ func (g *Graph) AllPaths() (pathNames [][]string, allTopologies [][]*TopologyOrd
 		pathName := make([]string, len(path))
 		for i, to := range path {
 			from := gatewayNodes[i]
-			toNode := g.nodes[to]
+			//toNode := g.nodes[to]
+			//dependencies := g.dependencies(to)
+			//for _, from1 := range dependencies {
+			//	pathGraph.dependentMap[from] = nodeMap{to: g.nodes[from1]}
+			//}
 			// Just replace the dependency map with the choice we want
 			// This isn't changing dependency map - might need to add later
 			pathGraph.dependentMap[from] = nodeMap{to: g.nodes[to]}
-			pathName[i] = fmt.Sprintf("%s", toNode.id)
+			pathName[i] = fmt.Sprintf("%s", to)
 		}
 		// Potentially this comes up with duplicate schemas
 		allTopologies = append(allTopologies, pathGraph.TopologicalSort())
@@ -518,7 +541,7 @@ func (g *Graph) AllPaths() (pathNames [][]string, allTopologies [][]*TopologyOrd
 
 // Combinations2D provides a list of all combinations of a 2D array
 // if array is [2,3,4],[4,5,6] then output is [2,4][2,5][2,6][3,4][3,5][3,6]...
-func Combinations2D(array2D [][]any) (combinations [][]any) {
+func Combinations2D(array2D [][]interface{}) (combinations [][]interface{}) {
 	if len(array2D) == 0 {
 		return
 	}
@@ -526,12 +549,12 @@ func Combinations2D(array2D [][]any) (combinations [][]any) {
 	for _, array := range array2D {
 		totalCombinations *= len(array)
 	}
-	combinations = make([][]any, 0, totalCombinations)
+	combinations = make([][]interface{}, 0, totalCombinations)
 	// Now we need to go through each combination of gateway nodes and complete the topological sort
 	idx := make([]int, len(array2D)) // Index into each node starting at 0
 	for {
 		// Record the current combination
-		var combination = make([]any, len(array2D))
+		var combination = make([]interface{}, len(array2D))
 		for i := 0; i < len(array2D); i++ {
 			combination[i] = array2D[i][idx[i]]
 		}
@@ -556,15 +579,15 @@ func Combinations2D(array2D [][]any) (combinations [][]any) {
 }
 
 // DFS Depth First Search
-func (g *Graph) DFS(s, f any) (paths [][]any) {
-	visited := make(map[any]bool)
-	var path []any
+func (g *Graph) DFS(s, f interface{}) (paths [][]interface{}) {
+	visited := make(map[interface{}]bool)
+	var path []interface{}
 	g.dfs(s, f, visited, path, &paths)
 	return paths
 }
 
 // DFS Depth First Search
-func (g *Graph) dfs(s any, e any, visited map[any]bool, path []any, paths *[][]any) {
+func (g *Graph) dfs(s interface{}, e interface{}, visited map[interface{}]bool, path []interface{}, paths *[][]interface{}) {
 	visited[s] = true
 	path = append(path, s)
 

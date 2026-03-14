@@ -3,6 +3,7 @@ package depgraph_test
 import (
 	"depgraph"
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
@@ -270,6 +271,77 @@ func testTopologicalSort(t *testing.T, g *depgraph.Graph, expect []orderNode, us
 
 }
 
+func testPaths(t *testing.T, g *depgraph.Graph, expectPathNames [][]string, expectPaths [][]*depgraph.TopologyOrder) {
+	foundPathNames, foundPaths := g.AllPaths()
+	assert.Len(t, foundPaths, len(expectPaths))
+	assert.Len(t, foundPathNames, len(expectPathNames))
+	if len(foundPaths) == len(expectPaths) {
+		// now check each path is correct
+		for p, foundPathName := range foundPathNames {
+			// Now find a path with the same activities
+			matchingEP := -1
+			for ep, expectedPathName := range expectPathNames {
+				if len(foundPathName) != len(expectedPathName) {
+					continue
+				}
+				matchCount := 0
+				for _, epn := range expectedPathName {
+					for _, pn := range foundPathName {
+						if pn == epn {
+							matchCount++
+							break
+						}
+					}
+				}
+				if matchCount == (len(expectedPathName)) {
+					matchingEP = ep
+					break
+				}
+			}
+			if matchingEP == -1 {
+				t.Errorf("found unexpected path %s", strings.Join(foundPathName, ", "))
+				continue
+			}
+			t.Logf("checking path %s", strings.Join(foundPathName, ", "))
+			assert.Equal(t, expectPathNames[matchingEP], foundPathName)
+			assert.Len(t, expectPaths[matchingEP], len(foundPaths[p]))
+			if len(expectPaths[matchingEP]) != len(foundPaths[p]) {
+				t.Logf("Different length for %s, found %d expected %d",
+					strings.Join(foundPathName, ", "), len(foundPaths[p]), len(expectPaths[matchingEP]))
+				if len(foundPaths[p]) > len(expectPaths[matchingEP]) {
+					for i, j := range foundPaths[p] {
+						if i < len(expectPaths[matchingEP]) {
+							t.Logf("Found %s, Expected %s", j.Node, expectPaths[matchingEP][i].Node)
+						} else {
+							t.Logf("Found %s", j.Node)
+						}
+					}
+				} else {
+					for i, j := range expectPaths[matchingEP] {
+						if i < len(foundPaths[p]) {
+							t.Logf("Expected %s, Found %s", j.Node, foundPaths[p][i].Node)
+						} else {
+							t.Logf("Expected %s", j.Node)
+						}
+					}
+				}
+			}
+			//t.Logf("Path: %s", path)
+			// now check the nodes
+			if len(expectPaths[matchingEP]) != len(foundPaths) {
+				for n, ts := range foundPaths[p] {
+					assert.Equal(t, ts.Node, expectPaths[matchingEP][n].Node)
+					if ts.Node != expectPaths[matchingEP][n].Node {
+						t.Logf(" Found: %s, Expected: %s", ts.Node, expectPaths[matchingEP][n].Node)
+
+					}
+				}
+			}
+		}
+	}
+
+}
+
 func TestTopologicalSort001(t *testing.T) {
 	g := depgraph.New()
 	assert.NoError(t, g.AddLink("1", "Order Submitted", "SIM Type?"))
@@ -371,13 +443,14 @@ func TestTopologicalSort001(t *testing.T) {
 	assert.NoError(t, g.AddNode("Require Logistics Order?", 0, 0, true))
 	assert.NoError(t, g.AddNode("Is eSIM?", 0, 0, true))
 
-	pathNames, allPaths := g.AllPaths()
-	for p, path := range pathNames {
-		t.Logf("Path: %s", path)
-		for _, ts := range allPaths[p] {
-			t.Logf("  %s:%s", ts.SortedStep, ts.Node)
-		}
-	}
+	//pathNames, allPaths := g.AllPaths()
+	//for p, path := range pathNames {
+	//	t.Logf("Path: %s", path)
+	//	for _, ts := range allPaths[p] {
+	//		t.Logf("  %s:%s", ts.SortedStep, ts.Node)
+	//	}
+	//}
+
 }
 
 //func TestStress(t *testing.T) {
@@ -743,44 +816,44 @@ func TestTopologicalSort005(t *testing.T) {
 
 func TestTopologicalSort006(t *testing.T) {
 	g := depgraph.New()
-	g.AddNode("Activity_1c6h4mm", 430.000000, -220.000000)
-	g.AddNode("Activity_0h922nq", 600.000000, -220.000000)
+	assert.NoError(t, g.AddNode("Activity_1c6h4mm", 430.000000, -220.000000))
+	assert.NoError(t, g.AddNode("Activity_0h922nq", 600.000000, -220.000000))
 	assert.NoError(t, g.AddLink("", "Activity_1c6h4mm", "Activity_0h922nq")) // Snapshot Account Views --> Refresh
-	g.AddNode("Gateway_0utu2zc", 745.000000, -283.000000)
-	g.AddNode("Activity_139t6xx", 950.000000, -298.000000)
+	assert.NoError(t, g.AddNode("Gateway_0utu2zc", 745.000000, -283.000000, true))
+	assert.NoError(t, g.AddNode("Activity_139t6xx", 950.000000, -298.000000))
 	assert.NoError(t, g.AddLink("", "Gateway_0utu2zc", "Activity_139t6xx")) // Any Issues? --> Account Data Viewed
-	g.AddNode("Gateway_0utu2zc", 745.000000, -283.000000)
-	g.AddNode("Activity_1y5gsi9", 820.000000, -210.000000)
+	assert.NoError(t, g.AddNode("Gateway_0utu2zc", 745.000000, -283.000000))
+	assert.NoError(t, g.AddNode("Activity_1y5gsi9", 820.000000, -210.000000))
 	assert.NoError(t, g.AddLink("", "Gateway_0utu2zc", "Activity_1y5gsi9")) // Any Issues? --> Raise Service Request
-	g.AddNode("Activity_1y5gsi9", 820.000000, -210.000000)
-	g.AddNode("Activity_139t6xx", 950.000000, -298.000000)
+	assert.NoError(t, g.AddNode("Activity_1y5gsi9", 820.000000, -210.000000))
+	assert.NoError(t, g.AddNode("Activity_139t6xx", 950.000000, -298.000000))
 	assert.NoError(t, g.AddLink("", "Activity_1y5gsi9", "Activity_139t6xx")) // Raise Service Request --> Account Data Viewed
-	g.AddNode("Event_1fy56rv", 82.000000, -276.000000)
-	g.AddNode("Activity_1e7q5j6", 160.000000, -298.000000)
+	assert.NoError(t, g.AddNode("Event_1fy56rv", 82.000000, -276.000000))
+	assert.NoError(t, g.AddNode("Activity_1e7q5j6", 160.000000, -298.000000))
 	assert.NoError(t, g.AddLink("", "Event_1fy56rv", "Activity_1e7q5j6")) //  --> Account View
-	g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000)
-	g.AddNode("Activity_0furyas", 550.000000, -110.000000)
+	assert.NoError(t, g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000, true))
+	assert.NoError(t, g.AddNode("Activity_0furyas", 550.000000, -110.000000))
 	assert.NoError(t, g.AddLink("", "Gateway_0tnoiya", "Activity_0furyas")) // Accordion View --> Transaction Account Views
-	g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000)
-	g.AddNode("Gateway_0utu2zc", 745.000000, -283.000000)
+	assert.NoError(t, g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000))
+	assert.NoError(t, g.AddNode("Gateway_0utu2zc", 745.000000, -283.000000))
 	assert.NoError(t, g.AddLink("", "Gateway_0tnoiya", "Gateway_0utu2zc")) // Accordion View --> Any Issues?
-	g.AddNode("Activity_1e7q5j6", 160.000000, -298.000000)
-	g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000)
+	assert.NoError(t, g.AddNode("Activity_1e7q5j6", 160.000000, -298.000000))
+	assert.NoError(t, g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000))
 	assert.NoError(t, g.AddLink("", "Activity_1e7q5j6", "Gateway_0tnoiya")) // Account View --> Accordion View
-	g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000)
-	g.AddNode("Activity_1c6h4mm", 430.000000, -220.000000)
+	assert.NoError(t, g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000))
+	assert.NoError(t, g.AddNode("Activity_1c6h4mm", 430.000000, -220.000000))
 	assert.NoError(t, g.AddLink("", "Gateway_0tnoiya", "Activity_1c6h4mm")) // Accordion View --> Snapshot Account Views
-	g.AddNode("Activity_08e5gsv", 710.000000, -110.000000)
-	g.AddNode("Activity_0furyas", 550.000000, -110.000000)
+	assert.NoError(t, g.AddNode("Activity_08e5gsv", 710.000000, -110.000000))
+	assert.NoError(t, g.AddNode("Activity_0furyas", 550.000000, -110.000000))
 	assert.NoError(t, g.AddLink("", "Activity_08e5gsv", "Activity_0furyas")) // Refresh --> Transaction Account Views
-	g.AddNode("Activity_0h922nq", 600.000000, -220.000000)
-	g.AddNode("Activity_1c6h4mm", 430.000000, -220.000000)
+	assert.NoError(t, g.AddNode("Activity_0h922nq", 600.000000, -220.000000))
+	assert.NoError(t, g.AddNode("Activity_1c6h4mm", 430.000000, -220.000000))
 	assert.NoError(t, g.AddLink("", "Activity_0h922nq", "Activity_1c6h4mm")) // Refresh --> Snapshot Account Views
-	g.AddNode("Activity_0furyas", 550.000000, -110.000000)
-	g.AddNode("Activity_08e5gsv", 710.000000, -110.000000)
+	assert.NoError(t, g.AddNode("Activity_0furyas", 550.000000, -110.000000))
+	assert.NoError(t, g.AddNode("Activity_08e5gsv", 710.000000, -110.000000))
 	assert.NoError(t, g.AddLink("", "Activity_0furyas", "Activity_08e5gsv")) // Transaction Account Views --> Refresh
-	g.AddNode("Activity_139t6xx", 950.000000, -298.000000)
-	g.AddNode("Event_1o2dsrx", 1092.000000, -276.000000)
+	assert.NoError(t, g.AddNode("Activity_139t6xx", 950.000000, -298.000000))
+	assert.NoError(t, g.AddNode("Event_1o2dsrx", 1092.000000, -276.000000))
 	assert.NoError(t, g.AddLink("", "Activity_139t6xx", "Event_1o2dsrx")) // Account Data Viewed -->
 	expect := []orderNode{
 		{order: "0001", node: "Event_1fy56rv"},              //
@@ -796,7 +869,204 @@ func TestTopologicalSort006(t *testing.T) {
 		{order: "0007", node: "Event_1o2dsrx"},              //
 	}
 	testTopologicalSort(t, g, expect, true, false)
+	expectPathNames := [][]string{
+		{"Activity_0furyas", "Activity_139t6xx"}, // Transaction Account Views, Account Data Viewed
+		{"Activity_0furyas", "Activity_1y5gsi9"}, // Transaction Account Views, Raise Service Request
+		{"Activity_1c6h4mm", "Activity_139t6xx"}, // Snapshot Account Views, Account Data Viewed
+		{"Activity_1c6h4mm", "Activity_1y5gsi9"}, // Snapshot Account Views, Raise Service Request
+		{"Gateway_0utu2zc", "Activity_139t6xx"},  // Any Issues?, Account Data Viewed
+		{"Gateway_0utu2zc", "Activity_1y5gsi9"},  // Any Issues?, Raise Service Request
+	}
+	expectPaths := [][]*depgraph.TopologyOrder{
+		{
+			{Node: "Event_1fy56rv"},    //
+			{Node: "Activity_1e7q5j6"}, // Account View
+			{Node: "Gateway_0tnoiya"},  // Accordion View
+			{Node: "Activity_0furyas"}, // Transaction Account Views
+			{Node: "Activity_08e5gsv"}, // Refresh
+			{Node: "Gateway_0utu2zc"},  // Any Issues?
+			{Node: "Activity_139t6xx"}, // Account Data Viewed
+			{Node: "Event_1o2dsrx"},    //
+		},
+		{
+			{Node: "Event_1fy56rv"},    //
+			{Node: "Activity_1e7q5j6"}, // Account View
+			{Node: "Gateway_0tnoiya"},  // Accordion View
+			{Node: "Activity_0furyas"}, // Transaction Account Views
+			{Node: "Activity_08e5gsv"}, // Refresh
+			{Node: "Gateway_0utu2zc"},  // Any Issues?
+			{Node: "Activity_1y5gsi9"}, // Raise Service Request
+			{Node: "Activity_139t6xx"}, // Account Data Viewed
+			{Node: "Event_1o2dsrx"},    //
+		},
+		{
+			{Node: "Event_1fy56rv"},    //
+			{Node: "Activity_1e7q5j6"}, // Account View
+			{Node: "Gateway_0tnoiya"},  // Accordion View
+			{Node: "Activity_1c6h4mm"}, // Snapshot Account Views
+			{Node: "Activity_0h922nq"}, // Refresh
+			{Node: "Gateway_0utu2zc"},  // Any Issues?
+			{Node: "Activity_139t6xx"}, // Account Data Viewed
+			{Node: "Event_1o2dsrx"},
+		}, //
+		{
+			{Node: "Event_1fy56rv"},    //
+			{Node: "Activity_1e7q5j6"}, // Account View
+			{Node: "Gateway_0tnoiya"},  // Accordion View
+			{Node: "Activity_1c6h4mm"}, // Snapshot Account Views
+			{Node: "Activity_0h922nq"}, // Refresh
+			{Node: "Gateway_0utu2zc"},  // Any Issues?
+			{Node: "Activity_1y5gsi9"}, // Raise Service Request
+			{Node: "Activity_139t6xx"}, // Account Data Viewed
+			{Node: "Event_1o2dsrx"},
+		}, //
+		{
+			{Node: "Event_1fy56rv"},    //
+			{Node: "Activity_1e7q5j6"}, // Account View
+			{Node: "Gateway_0tnoiya"},  // Accordion View
+			{Node: "Gateway_0utu2zc"},  // Any Issues?
+			{Node: "Activity_139t6xx"}, // Account Data Viewed
+			{Node: "Event_1o2dsrx"},    //
+		},
+		{
+			{Node: "Event_1fy56rv"},    //
+			{Node: "Activity_1e7q5j6"}, // Account View
+			{Node: "Gateway_0tnoiya"},  // Accordion View
+			{Node: "Gateway_0utu2zc"},  // Any Issues?
+			{Node: "Activity_1y5gsi9"}, // Raise Service Request
+			{Node: "Activity_139t6xx"}, // Account Data Viewed
+			{Node: "Event_1o2dsrx"},    //
+		},
+	}
+	testPaths(t, g, expectPathNames, expectPaths)
 }
+
+//func TestTopologicalSort006A(t *testing.T) {
+//	g := depgraph.New()
+//	assert.NoError(t, g.AddNode("Activity_1c6h4mm", 430.000000, -220.000000))
+//	assert.NoError(t, g.AddNode("Activity_0h922nq", 600.000000, -220.000000))
+//	assert.NoError(t, g.AddLink("", "Activity_1c6h4mm", "Activity_0h922nq")) // Snapshot Account Views --> Refresh
+//	assert.NoError(t, g.AddNode("Gateway_0utu2zc", 745.000000, -283.000000, true))
+//	assert.NoError(t, g.AddNode("Activity_139t6xx", 950.000000, -298.000000))
+//	assert.NoError(t, g.AddLink("", "Gateway_0utu2zc", "Activity_139t6xx")) // Any Issues? --> Account Data Viewed
+//	assert.NoError(t, g.AddNode("Gateway_0utu2zc", 745.000000, -283.000000))
+//	assert.NoError(t, g.AddNode("Activity_1y5gsi9", 820.000000, -210.000000))
+//	assert.NoError(t, g.AddLink("", "Gateway_0utu2zc", "Activity_1y5gsi9")) // Any Issues? --> Raise Service Request
+//	assert.NoError(t, g.AddNode("Activity_1y5gsi9", 820.000000, -210.000000))
+//	assert.NoError(t, g.AddNode("Activity_139t6xx", 950.000000, -298.000000))
+//	assert.NoError(t, g.AddLink("", "Activity_1y5gsi9", "Activity_139t6xx")) // Raise Service Request --> Account Data Viewed
+//	assert.NoError(t, g.AddNode("Event_1fy56rv", 82.000000, -276.000000))
+//	assert.NoError(t, g.AddNode("Activity_1e7q5j6", 160.000000, -298.000000))
+//	assert.NoError(t, g.AddLink("", "Event_1fy56rv", "Activity_1e7q5j6")) //  --> Account View
+//	assert.NoError(t, g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000, true))
+//	assert.NoError(t, g.AddNode("Activity_0furyas", 550.000000, -110.000000))
+//	assert.NoError(t, g.AddLink("", "Gateway_0tnoiya", "Activity_0furyas")) // Accordion View --> Transaction Account Views
+//	assert.NoError(t, g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000))
+//	assert.NoError(t, g.AddNode("Gateway_0utu2zc", 745.000000, -283.000000))
+//	assert.NoError(t, g.AddLink("", "Gateway_0tnoiya", "Gateway_0utu2zc")) // Accordion View --> Any Issues?
+//	assert.NoError(t, g.AddNode("Activity_1e7q5j6", 160.000000, -298.000000))
+//	assert.NoError(t, g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000))
+//	assert.NoError(t, g.AddLink("", "Activity_1e7q5j6", "Gateway_0tnoiya")) // Account View --> Accordion View
+//	assert.NoError(t, g.AddNode("Gateway_0tnoiya", 315.000000, -283.000000))
+//	assert.NoError(t, g.AddNode("Activity_1c6h4mm", 430.000000, -220.000000))
+//	assert.NoError(t, g.AddLink("", "Gateway_0tnoiya", "Activity_1c6h4mm")) // Accordion View --> Snapshot Account Views
+//	assert.NoError(t, g.AddNode("Activity_08e5gsv", 710.000000, -110.000000))
+//	assert.NoError(t, g.AddNode("Activity_0furyas", 550.000000, -110.000000))
+//	assert.NoError(t, g.AddLink("", "Activity_08e5gsv", "Activity_0furyas")) // Refresh --> Transaction Account Views
+//	assert.NoError(t, g.AddNode("Activity_0h922nq", 600.000000, -220.000000))
+//	assert.NoError(t, g.AddNode("Activity_1c6h4mm", 430.000000, -220.000000))
+//	assert.NoError(t, g.AddLink("", "Activity_0h922nq", "Activity_1c6h4mm")) // Refresh --> Snapshot Account Views
+//	assert.NoError(t, g.AddNode("Activity_0furyas", 550.000000, -110.000000))
+//	assert.NoError(t, g.AddNode("Activity_08e5gsv", 710.000000, -110.000000))
+//	assert.NoError(t, g.AddLink("", "Activity_0furyas", "Activity_08e5gsv")) // Transaction Account Views --> Refresh
+//	assert.NoError(t, g.AddNode("Activity_139t6xx", 950.000000, -298.000000))
+//	assert.NoError(t, g.AddNode("Event_1o2dsrx", 1092.000000, -276.000000))
+//	assert.NoError(t, g.AddLink("", "Activity_139t6xx", "Event_1o2dsrx")) // Account Data Viewed -->
+//	expect := []orderNode{
+//		{order: "0001", node: "Event_1fy56rv"},              //
+//		{order: "0002", node: "Activity_1e7q5j6"},           // Account View
+//		{order: "0003", node: "Gateway_0tnoiya"},            // Accordion View
+//		{order: "0003.0001.0001", node: "Activity_1c6h4mm"}, // Snapshot Account Views
+//		{order: "0003.0001.0002", node: "Activity_0h922nq"}, // Refresh
+//		{order: "0003.0002.0001", node: "Activity_0furyas"}, // Transaction Account Views
+//		{order: "0003.0002.0002", node: "Activity_08e5gsv"}, // Refresh
+//		{order: "0004", node: "Gateway_0utu2zc"},            // Any Issues?
+//		{order: "0005", node: "Activity_1y5gsi9"},           // Raise Service Request
+//		{order: "0006", node: "Activity_139t6xx"},           // Account Data Viewed
+//		{order: "0007", node: "Event_1o2dsrx"},              //
+//	}
+//	testTopologicalSort(t, g, expect, true, false)
+//	expectPathNames := [][]string{
+//		{"Activity_0furyas", "Activity_139t6xx"}, // Transaction Account Views, Account Data Viewed
+//		{"Activity_0furyas", "Activity_1y5gsi9"}, // Transaction Account Views, Raise Service Request
+//		{"Activity_1c6h4mm", "Activity_139t6xx"}, // Snapshot Account Views, Account Data Viewed
+//		{"Activity_1c6h4mm", "Activity_1y5gsi9"}, // Snapshot Account Views, Raise Service Request
+//		{"Gateway_0utu2zc", "Activity_139t6xx"},  // Any Issues?, Account Data Viewed
+//		{"Gateway_0utu2zc", "Activity_1y5gsi9"},  // Any Issues?, Raise Service Request
+//	}
+//	expectPaths := [][]*depgraph.TopologyOrder{
+//		{
+//			{Node: "Event_1fy56rv"},    //
+//			{Node: "Activity_1e7q5j6"}, // Account View
+//			{Node: "Gateway_0tnoiya"},  // Accordion View
+//			{Node: "Activity_0furyas"}, // Transaction Account Views
+//			{Node: "Activity_08e5gsv"}, // Refresh
+//			{Node: "Gateway_0utu2zc"},  // Any Issues?
+//			{Node: "Activity_139t6xx"}, // Account Data Viewed
+//			{Node: "Event_1o2dsrx"},    //
+//		},
+//		{
+//			{Node: "Event_1fy56rv"},    //
+//			{Node: "Activity_1e7q5j6"}, // Account View
+//			{Node: "Gateway_0tnoiya"},  // Accordion View
+//			{Node: "Activity_0furyas"}, // Transaction Account Views
+//			{Node: "Activity_08e5gsv"}, // Refresh
+//			{Node: "Gateway_0utu2zc"},  // Any Issues?
+//			{Node: "Activity_1y5gsi9"}, // Raise Service Request
+//			{Node: "Activity_139t6xx"}, // Account Data Viewed
+//			{Node: "Event_1o2dsrx"},    //
+//		},
+//		{
+//			{Node: "Event_1fy56rv"},    //
+//			{Node: "Activity_1e7q5j6"}, // Account View
+//			{Node: "Gateway_0tnoiya"},  // Accordion View
+//			{Node: "Activity_1c6h4mm"}, // Snapshot Account Views
+//			{Node: "Activity_0h922nq"}, // Refresh
+//			{Node: "Gateway_0utu2zc"},  // Any Issues?
+//			{Node: "Activity_139t6xx"}, // Account Data Viewed
+//			{Node: "Event_1o2dsrx"},
+//		}, //
+//		{
+//			{Node: "Event_1fy56rv"},    //
+//			{Node: "Activity_1e7q5j6"}, // Account View
+//			{Node: "Gateway_0tnoiya"},  // Accordion View
+//			{Node: "Activity_1c6h4mm"}, // Snapshot Account Views
+//			{Node: "Activity_0h922nq"}, // Refresh
+//			{Node: "Gateway_0utu2zc"},  // Any Issues?
+//			{Node: "Activity_1y5gsi9"}, // Raise Service Request
+//			{Node: "Activity_139t6xx"}, // Account Data Viewed
+//			{Node: "Event_1o2dsrx"},
+//		}, //
+//		{
+//			{Node: "Event_1fy56rv"},    //
+//			{Node: "Activity_1e7q5j6"}, // Account View
+//			{Node: "Gateway_0tnoiya"},  // Accordion View
+//			{Node: "Gateway_0utu2zc"},  // Any Issues?
+//			{Node: "Activity_139t6xx"}, // Account Data Viewed
+//			{Node: "Event_1o2dsrx"},    //
+//		},
+//		{
+//			{Node: "Event_1fy56rv"},    //
+//			{Node: "Activity_1e7q5j6"}, // Account View
+//			{Node: "Gateway_0tnoiya"},  // Accordion View
+//			{Node: "Gateway_0utu2zc"},  // Any Issues?
+//			{Node: "Activity_1y5gsi9"}, // Raise Service Request
+//			{Node: "Activity_139t6xx"}, // Account Data Viewed
+//			{Node: "Event_1o2dsrx"},    //
+//		},
+//	}
+//	testPaths(t, g, expectPathNames, expectPaths)
+//}
 
 func TestTopologicalSort007(t *testing.T) {
 	g := depgraph.New()
@@ -891,4 +1161,26 @@ func TestTopologicalSort007(t *testing.T) {
 		{order: "0012", node: "Activity_173n75w"},           // Request for Payment regularization
 	}
 	testTopologicalSort(t, g, expect, true, false)
+}
+
+func TestTopologicalSort008(t *testing.T) {
+	g := depgraph.New()
+	assert.NoError(t, g.AddLink("1", "Capture SIM", "Verify SIM"))
+	assert.NoError(t, g.AddLink("2", "Verify SIM", "Check SIM Availability"))
+
+	expectSort := []orderNode{
+		{order: "1", node: "Capture SIM", fromLinkID: ""},
+		{order: "2", node: "Verify SIM", fromLinkID: "1"},
+		{order: "3", node: "Check SIM Availability", fromLinkID: "2"},
+	}
+	testTopologicalSort(t, g, expectSort, false, true)
+
+	expectPathNames := [][]string{{"main"}}
+	expectPaths := [][]*depgraph.TopologyOrder{{
+		{Node: "Capture SIM"},
+		{Node: "Verify SIM"},
+		{Node: "Check SIM Availability"},
+	}}
+	testPaths(t, g, expectPathNames, expectPaths)
+
 }
